@@ -1,9 +1,10 @@
 import express from 'express';
 const router = express.Router();
+import { testEnvironmentVariable } from '../settings';
 
-router.use('/', function (req, res, next) {
+router.use('/', (req, res, next) => {
     res.json({
-        message: "You are welcome to the DMS api"
+        message: testEnvironmentVariable
     });
 });
 
