@@ -1,5 +1,5 @@
-const express = require('express');
-const router = express.Router()
+import express from 'express';
+const router = express.Router();
 
 router.use('/', function (req, res, next) {
     res.json({
@@ -7,4 +7,4 @@ router.use('/', function (req, res, next) {
     });
 });
 
-module.exports = router;
+export default router;

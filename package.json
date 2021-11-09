@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon --exec babel-node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,15 @@
     "mongodb": "^4.1.4",
     "mongoose": "^6.0.12",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/node": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/register": "^7.16.0",
+    "@babel/runtime": "^7.16.0",
+    "nodemon": "^2.0.15"
   }
 }
