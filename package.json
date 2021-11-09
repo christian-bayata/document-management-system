@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node app.js"
+    "start": "nodemon --exec babel-node app.js",
+    "test": "jest --runInBand --coverage --verbose --forceExit --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "@babel/preset-env": "^7.16.0",
     "@babel/register": "^7.16.0",
     "@babel/runtime": "^7.16.0",
+    "coveralls": "^3.1.1",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.2",

@@ -6,6 +6,7 @@
       ".babelrc",
       ".prettierrc",
       "src/"
+     
     ],
     "verbose": true,
     "ignore": ["*.test.js", "*.spec.js"]
