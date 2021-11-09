@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node app.js",
-    "test": "jest --runInBand --coverage --verbose --forceExit --detectOpenHandles"
+    "test": "jest --runInBand --coverage&&coverall < coverage/lcov.info --verbose --forceExit --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
