@@ -1,20 +1,21 @@
 language: node_js
 env:
   global:
-    - CC_TEST_REPORTER_ID=get-this-from-code-climate-repo-page
+    - CC_TEST_REPORTER_ID=dd57450f1752af7690c27e7e427953859122eff4a3a64d2b4a94bac3e7305e89
 matrix:
   include:
-    - node_js: '12'
+    - node_js:
+        - 'stable'
 cache:
   directories: [node_modules]
 install: npm install
-services: -mongodb
+services:
+  - mongodb
 after_success: npm coverage
 before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+  - sleep 15
+  - mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 script:
   - npm test
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESUL
+  - npm install coveralls@2.10.0 && cat ./coverage/lcov.info | coveralls
