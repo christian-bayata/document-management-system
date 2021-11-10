@@ -1,5 +1,5 @@
 import request from 'supertest';
-import server from '../app';
+import server from '../../app';
 
 const baseURI = '/api/v1';
 let app; 

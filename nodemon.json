@@ -4,8 +4,7 @@
       "nodemon.json",
       ".eslintrc.json",
       ".babelrc",
-      ".prettierrc",
-      "src/"
+      ".prettierrc"
      
     ],
     "verbose": true,

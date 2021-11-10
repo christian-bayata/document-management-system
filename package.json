@@ -7,7 +7,7 @@
     "dev": "SET NODE_ENV=development&&nodemon --exec babel-node app.js",
     "test": "SET NODE_ENV=test&&jest --runInBand --verbose --forceExit --detectOpenHandles --coverage && coveralls < coverage/lcov.info"
   },
-  "author": "",
+  "author": "Edomaruse Frank",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^10.0.0",

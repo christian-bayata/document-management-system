@@ -1,9 +1,9 @@
 import express from 'express';
 import logger from 'morgan';
-import indexRoute from './routes/index';
 import { port, environment } from './settings'
 import Database from './config/database';
 import connectionString from './config/connection';
+import documents from './api/v1/routes/document';
 
 const app = express();
 
@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: true}));
 new Database(connectionString).connect()
 
 //Routes
-app.use('/api/v1', indexRoute);
+app.use('/api/v1', documents);
 
 
 const server = app.listen(port, () => { console.log(`server running on port ${port} in ${environment} mode`) });
