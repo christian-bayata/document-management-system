@@ -19,4 +19,6 @@ new Database(connectionString).connect()
 app.use('/api/v1', documents);
 
 
-export const server = app.listen(port, () => console.log(`server running on port ${port} in ${environment} mode`));
+let server = app.listen(port, () => console.log(`server running on port ${port} in ${environment} mode`));
+
+export default server;
