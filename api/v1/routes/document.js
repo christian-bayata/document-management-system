@@ -1,8 +1,8 @@
 import express from 'express';
-import testDocController from '../controllers/document';
+import DocumentController from '../controllers/document';
 const router = express.Router();
 
-
-router.route('/document').get(testDocController);
+router.route('/document/create').post(DocumentController.create);
+router.route('/document').get(DocumentController.get);
 
 export default router;
