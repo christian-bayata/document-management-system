@@ -1,5 +1,6 @@
 import status from 'http-status';
 import Document from '../../../models/documents';
+import helpCalls from '../../../helper/helpCalls';
 import { validateCreateDoc } from '../../../validations/documents/validate-create-document';
 
 class DocumentController {
@@ -13,20 +14,22 @@ class DocumentController {
      */
 
     async create(req, res, next) {
-        const { error }  = await validateCreateDoc(req.body); 
-        if(error) return res.status(status.BAD_REQUEST).json(error.details[0].message);
-
-        const { title, content, access, ownerId } = req.body;
-        await Document.create({
-            title, 
-            content,
-            access,
-            ownerId
-        });
-        res.status(status.CREATED).json({
-            success: true,
-            message: "New Document has been created"
-        });
+        return helpCalls(async () => {
+            const { error }  = await validateCreateDoc(req.body); 
+            if(error) return res.status(status.BAD_REQUEST).json(error.details[0].message);
+    
+            const { title, content, access, ownerId } = req.body;
+            await Document.create({
+                title, 
+                content,
+                access,
+                ownerId
+            });
+            res.status(status.CREATED).json({
+                success: true,
+                message: "New Document has been created"
+            });
+        }, next);
     };
 
     async get(req, res, next) {
