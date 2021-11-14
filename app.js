@@ -1,6 +1,6 @@
 import express from 'express';
 import logger from 'morgan';
-import { port, environment } from './settings'
+import { port, environment } from './settings.js';
 import Database from './config/database';
 import connectionString from './config/connection';
 import documents from './api/v1/routes/document';
@@ -19,5 +19,4 @@ new Database(connectionString).connect()
 app.use('/api/v1', documents);
 
 
-const server = app.listen(port, () => { console.log(`server running on port ${port} in ${environment} mode`) });
-export default server;
+export const server = app.listen(port, () => console.log(`server running on port ${port} in ${environment} mode`));
