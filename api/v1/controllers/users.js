@@ -3,6 +3,7 @@ import User from '../../../models/users';
 import helpCalls from '../../../helper/helpCalls';
 import _ from 'lodash';
 import Response from '../../../utils/response';
+import UserRepository from '../../../repositories/userRepository';
 
 class UserController {
      
@@ -22,7 +23,12 @@ class UserController {
 
             let { userName, firstName, lastName, email, password, roleId } = req.body;
 
-            const user = await User.create({
+            const existingUser = await UserRepository.findUsingEmail(email);
+            if(existingUser) {
+                return Response.badRequest({ res, message: "User already exists" });
+            }
+
+            const user = await UserRepository.create({
                 userName,
                 firstName,
                 lastName,
@@ -36,7 +42,6 @@ class UserController {
             let result = _.pick(user, [ "userName", "firstName", "lastName", "email", "roleId" ]);
             result.token = token;
             res.header('X-auth-token', token);
-            console.log(token);
             return Response.success({res, message: "User has successfully registered", body: user }); 
         }, next)
     }
