@@ -12,3 +12,6 @@ export const db_name = process.env.LOCAL_DB_NAME;
 export const test_host = process.env.TEST_DB_HOST;
 export const test_port = process.env.TEST_DB_PORT;
 export const test_name = process.env.TEST_DB_NAME;
+
+export const secretKey = process.env.JWTPRIVATEKEY;
+export const jwtExpirationTime = process.env.JWTEXPIRATIONTIME;

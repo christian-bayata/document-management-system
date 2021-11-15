@@ -3,7 +3,8 @@ import logger from 'morgan';
 import { port, environment } from './settings.js';
 import Database from './config/database';
 import connectionString from './config/connection';
-import documents from './api/v1/routes/document';
+import documents from './api/v1/routes/documents';
+import users from './api/v1/routes/users';
 
 const app = express();
 
@@ -17,7 +18,7 @@ new Database(connectionString).connect()
 
 //Routes
 app.use('/api/v1', documents);
-
+app.use('/api/v1', users);
 
 let server = app.listen(port, () => console.log(`server running on port ${port} in ${environment} mode`));
 

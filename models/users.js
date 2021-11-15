@@ -74,6 +74,6 @@ userSchema.methods.getResetPasswordToken = function() {
     return resetToken;
 }
 
-UserSchema.plugin(mongoosastic);
+userSchema.plugin(mongoosastic);
 
-export default mongoose.model('Document', documentSchema);
+export default mongoose.model('User', userSchema);

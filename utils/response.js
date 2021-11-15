@@ -19,7 +19,7 @@ class Response {
      * @param message
      * @param body
      * @returns {*}
-     */
+     */ 
 
      static badRequest({res, statusCode=status.BAD_REQUEST, message="Failed Operation", body={}}) {
         return res.status(statusCode).send({message, body});
