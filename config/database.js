@@ -5,7 +5,7 @@ class Database {
         this.connectionString = connectionString
     }; 
 
-    async connect() {
+    async connected() {
         try{
             await mongoose.connect(this.connectionString, {
                 useNewUrlParser: true,

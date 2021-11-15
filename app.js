@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 //Set up database connection
-new Database(connectionString).connect()
+new Database(connectionString).connected()
 
 //Routes
 app.use('/api/v1', documents);
