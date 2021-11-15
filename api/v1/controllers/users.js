@@ -42,7 +42,7 @@ class UserController {
             let result = _.pick(user, [ "userName", "firstName", "lastName", "email", "roleId" ]);
             result.token = token;
             res.header('X-auth-token', token);
-            return Response.success({res, message: "User has successfully registered", body: user }); 
+            return Response.created({res, message: "User has successfully registered", body: user }); 
         }, next)
     }
 }

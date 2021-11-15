@@ -19,6 +19,18 @@ class Response {
      * @param message
      * @param body
      * @returns {*}
+     */
+    
+    static created({res, statusCode=status.CREATED, message="Created Successfully", body={}}) {
+        return res.status(statusCode).send({message, body});
+    };
+
+    /**
+     * @param res
+     * @param statusCode
+     * @param message
+     * @param body
+     * @returns {*}
      */ 
 
      static badRequest({res, statusCode=status.BAD_REQUEST, message="Failed Operation", body={}}) {

@@ -19,7 +19,11 @@ describe("Users Controller", () => {
     });
     
     describe('Register user', () => {
-        
+
+        const exec = async () => {
+            return await request(app).post(`${baseURI}/register`).send(userDetails);
+        };
+
         it('should return 400 if userName is missing', async () => {
             let userDetails = {
                 firstName: "user_firstName",
@@ -96,6 +100,45 @@ describe("Users Controller", () => {
             const res = await request(app).post(`${baseURI}/register`).send(userDetails);
             expect(res.status).toEqual(400);
             expect(res.body.message).toMatch(/roleId/);
+        });
+
+        it('should return 400 if user already exists', async () => {
+            await User.insertMany({
+                userName: "user_userName",
+                firstName: "user_firstName",
+                lastName: "user_lastName",   
+                email: "user@gmail.com",
+                password: "abc123",
+                roleId: 2      
+            })
+
+            const existingUserPayload = { 
+                userName: "user_userName",
+                firstName: "user_firstName",
+                lastName: "user_lastName",   
+                email: "user@gmail.com",
+                password: "abc123",
+                roleId: 2
+             };
+            const res = await request(app).post(`${baseURI}/register`).send(existingUserPayload);
+            expect(res.status).toEqual(400);
+            expect(res.body.message).toMatch(/exists/);
+        });
+
+        it('should return 200 if all user details exists', async () => {
+
+            const userDetails = { 
+                userName: "Frankie1",
+                firstName: "Frank",
+                lastName: "Osagie",
+                email: "franksagie1@gmail.com",
+                password: "frank123",
+                roleId: 2
+             };
+
+             const res = await request(app).post(`${baseURI}/register`).send(userDetails);
+            expect(res.status).toBe(201);
+            expect(res.body.message).toMatch(/Registered/i);
         });
     });
 });
