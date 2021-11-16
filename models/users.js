@@ -52,9 +52,14 @@ userSchema.pre('save', async function save(next) {
     }
 });
 
+//Compare password using bcrypt.compare
+userSchema.methods.comparePassword = async function (userPassword) {
+    return await bcrypt.compare(userPassword, this.password)
+};
+
 //Generate JWT token
-userSchema.methods.generateAuthToken = async function() {
-    const token = jwt.sign({ id: this._id }, secretKey, {
+userSchema.methods.generateAuthToken = function() {
+    const token = jwt.sign({ id: this.id }, secretKey, {
         expiresIn: jwtExpirationTime
     });
     return token;

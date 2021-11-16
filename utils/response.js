@@ -16,7 +16,7 @@ class Response {
     /**
      * @param res
      * @param statusCode
-     * @param message
+     * @param message 
      * @param body
      * @returns {*}
      */

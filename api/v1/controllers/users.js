@@ -1,4 +1,5 @@
 import validateRegisterUser from '../../../validations/users/validate-register-user';
+import validateLoginUser from '../../../validations/users/validate-login-user';
 import User from '../../../models/users';
 import helpCalls from '../../../helper/helpCalls';
 import _ from 'lodash';
@@ -13,6 +14,7 @@ class UserController {
      * @param req
      * @param res
      * @param next
+     * @route - /api/v1/register
      * @returns {Object} 
      */
 
@@ -37,14 +39,43 @@ class UserController {
                 roleId 
             });
             
-            let token = user.generateAuthToken();
+            const token = user.generateAuthToken();
             
             let result = _.pick(user, [ "userName", "firstName", "lastName", "email", "roleId" ]);
             result.token = token;
-            res.header('X-auth-token', token);
-            return Response.created({res, message: "User has successfully registered", body: user }); 
+            res.header('x-auth-token', token);
+            return Response.success({ res, message: "Successfully created new user", body: result }); 
         }, next)
     }
-}
+
+    /**
+    * @Responsibilty - Creates a new User
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/login
+     * @returns {Object} 
+     */
+
+     async login(req, res, next) {
+        const { error } = await validateLoginUser(req.body);
+        if(error) return Response.badRequest({res, message: error.details[0].message});
+
+        let { email, password } = req.body;
+        return helpCalls(async () => {
+            const user = await UserRepository.findUsingEmail(email);
+            if(!user) return Response.requestNotFound({ res, message: "Email address does not exist" });
+
+            const confirmPassword = await user.comparePassword(password);
+            if(!confirmPassword) return Response.badRequest({ res, message: "Password does not match" });
+
+            const token = user.generateAuthToken();
+            let result = _.pick(user, ["_id", "userName", "email"]);
+            result.token = token;
+            res.header('X-auth-token', token);
+            return Response.success({ res, message: "Successfully logged in", body: result });
+        }, next)
+    };
+};
 
 export default new UserController;
