@@ -49,7 +49,7 @@ class UserController {
     }
 
     /**
-    * @Responsibilty - Creates a new User
+    * @Responsibilty - logs a user in
      * @param req
      * @param res
      * @param next
@@ -57,7 +57,7 @@ class UserController {
      * @returns {Object} 
      */
 
-     async login(req, res, next) {
+    async login(req, res, next) {
         const { error } = await validateLoginUser(req.body);
         if(error) return Response.badRequest({res, message: error.details[0].message});
 
@@ -76,6 +76,23 @@ class UserController {
             return Response.success({ res, message: "Successfully logged in", body: result });
         }, next)
     };
+
+    /**
+    * @Responsibilty - Logs out a user
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/logout
+     * @returns {Object} 
+     */
+
+    async logout(req, res, next) {
+        return helpCalls(async () => {
+            res.header = null;
+            return Response.success({ res, message: "You have logged out successfully"});
+        }, next)
+        
+    }
 };
 
 export default new UserController;
