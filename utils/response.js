@@ -54,18 +54,29 @@ class Response {
      * @param statusCode
      * @param message
      * @param body
-     * @param error
-     * @param stack
+     * @returns {*}
+     */
+
+     static notAuthorized({res, statusCode=status.UNAUTHORIZED, 
+        message="You are not  authorized to access this resource", 
+        body = {}, 
+    }) {
+        return res.status(statusCode).send({message, body});
+    };
+
+    /**
+     * @param res
+     * @param statusCode
+     * @param message
+     * @param body
      * @returns {*}
      */
 
      static internalServerError({res, statusCode=status.INTERNAL_SERVER_ERROR, 
         message="Oops! Something Went Wrong", 
-        body = {}, 
-        error, 
-        stack
+        body = {}
     }) {
-        return res.status(statusCode).send({message, body, error, stack});
+        return res.status(statusCode).send({message, body});
     };
 }
 

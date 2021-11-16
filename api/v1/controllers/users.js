@@ -1,3 +1,4 @@
+require('express-async-errors');
 import validateRegisterUser from '../../../validations/users/validate-register-user';
 import validateLoginUser from '../../../validations/users/validate-login-user';
 import User from '../../../models/users';
@@ -72,13 +73,30 @@ class UserController {
             const token = user.generateAuthToken();
             let result = _.pick(user, ["_id", "userName", "email"]);
             result.token = token;
-            res.header('X-auth-token', token);
+            res.header('x-auth-token', token);
             return Response.success({ res, message: "Successfully logged in", body: result });
         }, next)
     };
 
     /**
-    * @Responsibilty - Logs out a user
+     * @Responsibilty - get user details
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/me
+     * @returns {Object} 
+     */
+
+     async userDetails(req, res, next) {
+        return helpCalls(async () => {
+            const user = await User.findById(req.user._id).select("-password");
+            return Response.success({ res, body: user });
+        }, next)
+        
+    }
+
+    /**
+     * @Responsibilty - Logs out a user
      * @param req
      * @param res
      * @param next

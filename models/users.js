@@ -59,9 +59,7 @@ userSchema.methods.comparePassword = async function (userPassword) {
 
 //Generate JWT token
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({ id: this.id }, secretKey, {
-        expiresIn: jwtExpirationTime
-    });
+    const token = jwt.sign({_id: this._id }, secretKey);
     return token;
 };
 

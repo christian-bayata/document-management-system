@@ -14,7 +14,7 @@ class UserRepository {
         return await this.user.create(user);
     }
 
-    /**
+    /** 
      * @param email
      * @returns {Promise<void>}
      */
@@ -22,7 +22,6 @@ class UserRepository {
      async findUsingEmail(email) {
         return await this.user.findOne({email});
     };
-
 
 }
 
