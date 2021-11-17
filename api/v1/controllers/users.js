@@ -96,6 +96,34 @@ class UserController {
     }
 
     /**
+     * @Responsibilty - Update user details
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/me/update
+     * @returns {Object} 
+     */
+
+     async updateUser(req, res, next) {
+        return helpCalls(async () => {
+            const newUserDetail = {
+                userName: req.body.userName,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email
+            };
+
+            const user = await User.findByIdAndUpdate(req.user._id, newUserDetail, {
+                new: true,
+                runValidators: true,
+                useFindAndModify: false
+            });
+            return Response.success({ res, message: "User details have been successfully updated", body: user});
+        }, next)
+        
+    }
+
+    /**
      * @Responsibilty - Logs out a user
      * @param req
      * @param res
@@ -145,6 +173,29 @@ class UserController {
             const user = await UserRepository.findById(id);
             if(!user) return Response.requestNotFound({res, message: `user with the ID ${id} not found`});
             return Response.success({ res, message: `Successfully retrieved user with ID ${id}`, body: user });
+        }, next)
+    };
+
+    /**
+     * @Responsibilty - gets users by their usernames 
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/user/names
+     * @returns {Object} 
+     */
+
+     async getUserByUsernames(req, res, next) {
+        return helpCalls( async () => {
+            const { query } = req.query;
+            const result = await UserRepository.Search(query);
+            if (!result || !result.hits) {
+                return response.requestNotFound({ res, message: `No results found for ${query}` });
+            }
+            hits = result.hits.hits.map((hit) => {
+                return hit._source;
+            });
+            return response.success({ res, message: `Search for Answer: ${query}`, body: hits });
         }, next)
     };
 };

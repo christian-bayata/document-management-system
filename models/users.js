@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import mongoosastic from 'mongoosastic';
-import { secretKey, jwtExpirationTime } from '../settings'
+import mexp from 'mongoose-elasticsearch-xp';
+import { secretKey } from '../settings'
 
 const userSchema = new mongoose.Schema({
     userName: {
@@ -77,6 +77,6 @@ userSchema.methods.getResetPasswordToken = function() {
     return resetToken;
 }
 
-userSchema.plugin(mongoosastic);
+userSchema.plugin(mexp);
 
 export default mongoose.model('User', userSchema);

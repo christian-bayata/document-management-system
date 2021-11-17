@@ -81,7 +81,7 @@ class Response {
 
     /**
      * @param res
-     * @param statusCode
+     * @param statusCode 
      * @param message
      * @param body
      * @returns {*}

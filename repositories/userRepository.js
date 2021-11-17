@@ -28,7 +28,7 @@ class UserRepository {
      */
 
      async findAll() {
-        return await this.user.find({}, { password: false, roleId: false });
+        return await this.user.find({}, { password: false, roleId: false }).lean();
     };
 
     /**
@@ -39,6 +39,21 @@ class UserRepository {
      async findById(id) {
         return await this.user.findById(id);
     };
+
+    /**
+     *
+     * @param query
+     * @returns {Promise<void|Promise>}
+     */
+	async search(query)
+	{
+		return this.user.esSearch({
+			query_string: {
+				query,
+			},
+		});
+	}
+
 }
 
 export default new UserRepository(User);
