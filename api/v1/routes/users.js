@@ -14,4 +14,6 @@ router.route('/logout').get(userController.logout);
 
 router.route('/users').get(isUserAuthenticated, isUserAuthorized, userController.getAllUsers);
 
+router.route('/user/:id').get(isUserAuthenticated, isUserAuthorized, userController.getUserById);
+
 export default router;

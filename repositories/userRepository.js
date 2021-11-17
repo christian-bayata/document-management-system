@@ -23,6 +23,22 @@ class UserRepository {
         return await this.user.findOne({email});
     };
 
+    /** 
+     * @returns {Promise<void>}
+     */
+
+     async findAll() {
+        return await this.user.find({}, { password: false, roleId: false });
+    };
+
+    /**
+     * @param id 
+     * @returns {Promise<void>}
+     */
+
+     async findById(id) {
+        return await this.user.findById(id);
+    };
 }
 
 export default new UserRepository(User);

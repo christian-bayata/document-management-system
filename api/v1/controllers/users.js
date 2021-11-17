@@ -125,8 +125,26 @@ class UserController {
 
     async getAllUsers(req, res, next) {
         return helpCalls( async () => {
-            const users = await User.find({}, {password: false});
+            const users = await UserRepository.findAll();
             return Response.success({ res, message: "Successfully retrieved all users", body: users });
+        }, next)
+    };
+
+    /**
+     * @Responsibilty - gets users by their ids 
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/user/:id
+     * @returns {Object} 
+     */
+
+     async getUserById(req, res, next) {
+        return helpCalls( async () => {
+            const id = req.params.id;
+            const user = await UserRepository.findById(id);
+            if(!user) return Response.requestNotFound({res, message: `user with the ID ${id} not found`});
+            return Response.success({ res, message: `Successfully retrieved user with ID ${id}`, body: user });
         }, next)
     };
 };
