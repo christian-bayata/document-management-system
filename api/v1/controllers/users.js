@@ -176,28 +176,48 @@ class UserController {
         }, next)
     };
 
+    // /**
+    //  * @Responsibilty - gets users by their usernames 
+    //  * @param req
+    //  * @param res
+    //  * @param next
+    //  * @route - /api/v1/user/names
+    //  * @returns {Object} 
+    //  */
+
+    //  async getUserByUsernames(req, res, next) {
+    //     return helpCalls( async () => {
+    //         const { query } = req.query;
+    //         const result = await UserRepository.Search(query);
+    //         if (!result || !result.hits) {
+    //             return response.requestNotFound({ res, message: `No results found for ${query}` });
+    //         }
+    //         hits = result.hits.hits.map((hit) => {
+    //             return hit._source;
+    //         });
+    //         return response.success({ res, message: `Search for Answer: ${query}`, body: hits });
+    //     }, next)
+    // };
+
     /**
-     * @Responsibilty - gets users by their usernames 
+     * @Responsibilty - deletes user 
      * @param req
      * @param res
      * @param next
-     * @route - /api/v1/user/names
+     * @route - /api/v1/user/:id
      * @returns {Object} 
      */
 
-     async getUserByUsernames(req, res, next) {
-        return helpCalls( async () => {
-            const { query } = req.query;
-            const result = await UserRepository.Search(query);
-            if (!result || !result.hits) {
-                return response.requestNotFound({ res, message: `No results found for ${query}` });
-            }
-            hits = result.hits.hits.map((hit) => {
-                return hit._source;
-            });
-            return response.success({ res, message: `Search for Answer: ${query}`, body: hits });
+    async deleteUser(req, res, next) {
+        return helpCalls(async () => {
+            const id = req.params.id;
+            const user = await User.findById(id);
+            if(!user) return Response.requestNotFound({res, message: `user with ID ${id} is not found`});
+
+            await user.deleteOne();
+            return Response.success({res, message: `Successfully deleted user with ID ${id}`});
         }, next)
-    };
+    }
 };
 
 export default new UserController;
