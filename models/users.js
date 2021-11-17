@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
 	},
 	roleId: {
 		type: Number, 
-		default: 2
+		default: 2 
 	},
     resetPasswordToken: String,
     resetPasswordExpires: Date
@@ -59,7 +59,7 @@ userSchema.methods.comparePassword = async function (userPassword) {
 
 //Generate JWT token
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({_id: this._id }, secretKey);
+    const token = jwt.sign({_id: this._id, roleId: this.roleId }, secretKey);
     return token;
 };
 

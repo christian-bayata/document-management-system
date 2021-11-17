@@ -14,7 +14,6 @@ import { secretKey } from '../settings';
 
 const isUserAuthenticated = async (req, res, next) => {
     const token = req.header("x-auth-token");
-    console.log(token);
     if(!token) return Response.notAuthorized({ 
         res, 
         message: "You cannot access this resource, please provide a valid token"
@@ -30,13 +29,14 @@ const isUserAuthenticated = async (req, res, next) => {
     }
 }
 
-// const isUserAuthorized = function (...roles) {
-//     return (req, res, next) => {
-//         if(!roles.includes(req.user.role)) {
-//             return next(new ErrorHandler(`Role ${req.user.role} is not permitted to access this resource`, 403))
-//         };
-//         next()
-//     }
-// };
+const isUserAuthorized = (req, res, next) => {
+    if(req.user.roleId !== 1) {
+        return next(Response.forbidden({ res, message: "Sorry, you cannot access this resource"}))
+    }
+    next();
+}
 
-export default isUserAuthenticated;
+export {
+    isUserAuthenticated,
+    isUserAuthorized
+}

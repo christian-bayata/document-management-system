@@ -108,9 +108,27 @@ class UserController {
         return helpCalls(async () => {
             res.header = null;
             return Response.success({ res, message: "You have logged out successfully"});
+        }, next)  
+    };
+
+    // ..................................................................................................
+    //ADMIN
+
+    /**
+     * @Responsibilty - gets all users
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/users
+     * @returns {Object} 
+     */
+
+    async getAllUsers(req, res, next) {
+        return helpCalls( async () => {
+            const users = await User.find({}, {password: false});
+            return Response.success({ res, message: "Successfully retrieved all users", body: users });
         }, next)
-        
-    }
+    };
 };
 
 export default new UserController;

@@ -58,7 +58,22 @@ class Response {
      */
 
      static notAuthorized({res, statusCode=status.UNAUTHORIZED, 
-        message="You are not  authorized to access this resource", 
+        message="You are not authorized to access this resource", 
+        body = {}, 
+    }) {
+        return res.status(statusCode).send({message, body});
+    };
+
+    /**
+     * @param res
+     * @param statusCode
+     * @param message
+     * @param body
+     * @returns {*}
+     */
+
+     static forbidden({res, statusCode=status.FORBIDDEN, 
+        message="You are not authorized to access this resource", 
         body = {}, 
     }) {
         return res.status(statusCode).send({message, body});
