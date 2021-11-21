@@ -224,6 +224,76 @@ describe("Users Controller", () => {
             .set('x-auth-token', token)
             expect(res.status).toEqual(200);
             expect(decoded._id).toBeTruthy();        
-        })
-    })
+        });
+    });
+
+    describe('Update user details', () => {
+        it('should return 404 if the user is not logged in', async () => {
+            //No email, no password;
+            const userPayload = {};
+
+            const res = await request(app)
+            .put(`${baseURI}/ghfkdji786`)
+            .send(userPayload);
+            expect(res.status).toEqual(404);      
+        });
+
+        it('should return 401 if the user does not provide a token', async () => {
+            //No email, no password;
+            const userPayload = {
+                email: "franksagie1@gmail.com",
+                pasword: "frank123"
+            };
+
+            const res = await request(app)
+            .put(`${baseURI}/me/update`)
+            .send(userPayload);
+            expect(res.status).toEqual(401);      
+        });
+
+        it('should return 401 if the user roleId is 2', async () => {
+            //No email, no password;
+            const userPayload = {
+                email: "franksagie1@gmail.com",
+                pasword: "frank123"
+            };
+
+            const res = await request(app)
+            .put(`${baseURI}/me/update`)
+            .send(userPayload);
+            expect(res.status).toEqual(401);
+            expect(res.body.message).toMatch(/cannot access/)      
+        });
+
+        it('should return 404 if user is not found', async () => {
+            const token = (new User()).generateAuthToken();
+            const fakeUserPayload = {
+                userName: "userName_test",
+                firstName: "firstName_test",
+                lastName: "lastName_test",
+                email: "tester@gmail.com"
+            };
+            const res = await request(app)
+            .put(`${baseURI}/${fakeUserPayload._id}`)
+            .set('x-auth-token', token)
+            .send(fakeUserPayload);
+            expect(res.status).toEqual(404);      
+        });
+
+        it('should update user details and return 200', async () => {
+            const token = (new User()).generateAuthToken();
+            const userPayload = {
+                userName: "userName",
+                firstName: "firstName",
+                lastName: "lastName",
+                email: "tester@gmail.com",
+            };
+            const res = await request(app)
+            .put(`${baseURI}/me/update`)
+            .set('x-auth-token', token)
+            .send(userPayload);
+            expect(res.status).toEqual(200);
+            expect(res.body.message).toMatch(/successfully updated/i);      
+        });
+    });
 });
