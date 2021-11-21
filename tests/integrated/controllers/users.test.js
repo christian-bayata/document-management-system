@@ -191,7 +191,8 @@ describe("Users Controller", () => {
                 email: "franksagie1@gmail.com",
                 password: "frank123"
             };
-            const token = jwt.sign({_id: mongoose.Types.ObjectId().toHexString(), roleId: 2 }, secretKey)
+            const id = mongoose.Types.ObjectId().toHexString();
+            const token = jwt.sign({_id: id, roleId: 2 }, secretKey);
             
             const res = await request(app)
             .post(`${baseURI}/login`)
@@ -212,4 +213,17 @@ describe("Users Controller", () => {
             expect(res.header).toBeDefined();
         });
     });
+
+    describe('Get user details', () => {
+        it('should return 200 if the  user details are found', async () => {
+            const id = mongoose.Types.ObjectId().toHexString();
+            const token = jwt.sign({_id: user._id, roleId: user.roleId }, secretKey)
+            const decoded = jwt.verify(token, secretKey);
+            const res = await request(app)
+            .get(`${baseURI}/me`)
+            .set('x-auth-token', token)
+            expect(res.status).toEqual(200);
+            expect(decoded._id).toBeTruthy();        
+        })
+    })
 });
