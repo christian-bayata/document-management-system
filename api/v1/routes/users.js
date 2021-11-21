@@ -18,7 +18,8 @@ router.route('/users').get(isUserAuthenticated, isUserAuthorized, userController
 
 router.route('/user/:id').get(isUserAuthenticated, isUserAuthorized, userController.getUserById);
 
+router.route('/user/search').get(isUserAuthenticated, isUserAuthorized, userController.getUserByUsernames);
+
 router.route('/delete/user/:id').delete(isUserAuthenticated, isUserAuthorized, userController.deleteUser);
-// router.route('/user/names').get(isUserAuthenticated, isUserAuthorized, userController.getUserByUsernames);
 
 export default router;

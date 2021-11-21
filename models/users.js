@@ -3,9 +3,10 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import mexp from 'mongoose-elasticsearch-xp';
+import mongoosastic from 'mongoosastic';
 import { secretKey } from '../settings'
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({ 
     userName: {
 		type: String,
 		required: true,
@@ -77,6 +78,21 @@ userSchema.methods.getResetPasswordToken = function() {
     return resetToken;
 }
 
-userSchema.plugin(mexp);
+userSchema.plugin(mongoosastic, {
+	host: "http://localhost:9200"
+});
 
-export default mongoose.model('User', userSchema);
+const User =  mongoose.model('User', userSchema);
+
+// //Mongoosastic mapping settings
+// User.createMapping((err, mapping) => {
+// 	// if(err) {
+// 	// 	console.log("Could not create mapping ", err);
+// 	// }
+// 	console.log("mapping created");
+// 	console.log(mapping);
+// })
+
+export default User;
+
+

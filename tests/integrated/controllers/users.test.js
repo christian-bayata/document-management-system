@@ -2,6 +2,8 @@ import request from 'supertest';
 import server from '../../../app';
 import User from '../../../models/users';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+import { secretKey } from '../../../settings';
 
 const baseURI = '/api/v1';
 let app; 
@@ -14,16 +16,11 @@ describe("Users Controller", () => {
     
     afterAll(async () => { 
         app.close();
-        await User.deleteMany();
+        await User.deleteMany({});
         mongoose.disconnect(); 
     });
     
     describe('Register user', () => {
-
-        const exec = async () => {
-            return await request(app).post(`${baseURI}/register`).send(userDetails);
-        };
-
         it('should return 400 if userName is missing', async () => {
             let userDetails = {
                 firstName: "user_firstName",
@@ -138,7 +135,81 @@ describe("Users Controller", () => {
 
              const res = await request(app).post(`${baseURI}/register`).send(userDetails);
             expect(res.status).toBe(201);
-            expect(res.body.message).toMatch(/Registered/i);
+            expect(res.body.message).toMatch(/created/i);
+        });
+    });
+
+    describe('Login user', () => {
+        it('should return 400 if user payload does not contain email', async () => {
+            const userPayload = {
+                password: "frank123"
+            }; 
+            const res = await request(app)
+            .post(`${baseURI}/login`)
+            .send(userPayload);
+            expect(res.status).toEqual(400);
+            expect(res.body.message).toMatch(/email/i);
+        });
+
+        it('should return 400 if user payload does not contain password', async () => {
+            const userPayload = {
+                email: "user@gmail.com"
+            }; 
+            const res = await request(app)
+            .post(`${baseURI}/login`)
+            .send(userPayload);
+            expect(res.status).toEqual(400);
+            expect(res.body.message).toMatch(/password/i);
+        });
+
+        it('should return 400 if user password is incorrect', async () => {
+            const userPayload = {
+                email: "franksagie1@gmail.com",
+                password: "abc123"
+            }; 
+            const res = await request(app)
+            .post(`${baseURI}/login`)
+            .send(userPayload);
+            expect(res.status).toEqual(400);
+            expect(res.body.message).toMatch(/password/i);
+        });
+
+        it('should return 404 if user email cannot be found in the database', async () => {
+            const userPayload = {
+                email: "user@gmail.com",
+                password: "frank123"
+            }; 
+            const res = await request(app)
+            .post(`${baseURI}/login`)
+            .send(userPayload);
+            expect(res.status).toEqual(400);
+            expect(res.body.message).toMatch(/password/i);
+        });
+
+        it('should generate token for logged in users', async () => {
+            const userPayload = {
+                email: "franksagie1@gmail.com",
+                password: "frank123"
+            };
+            const token = jwt.sign({_id: mongoose.Types.ObjectId().toHexString(), roleId: 2 }, secretKey)
+            
+            const res = await request(app)
+            .post(`${baseURI}/login`)
+            .send(userPayload);
+            expect(res.body.token).not.toBeNull();
+            expect(res.header).toBeDefined();
+        });
+
+        it('should return 200 if user payload has correct details', async () => {            
+            const userPayload = {
+                email: "franksagie1@gmail.com",
+                password: "frank123"
+            }
+            const res = await request(app)
+            .post(`${baseURI}/login`)
+            .send(userPayload);
+            expect(res.status).toEqual(200);
+            expect(res.header).toBeDefined();
         });
     });
 });

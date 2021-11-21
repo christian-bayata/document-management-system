@@ -47,9 +47,9 @@ class UserRepository {
      */
 	async search(query)
 	{
-		return this.user.esSearch({
+		return this.user.search({
 			query_string: {
-				query,
+				query: terms
 			},
 		});
 	}
