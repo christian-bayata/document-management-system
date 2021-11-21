@@ -296,4 +296,11 @@ describe("Users Controller", () => {
             expect(res.body.message).toMatch(/successfully updated/i);      
         });
     });
+
+    describe('Log out a user', () => {
+        it('should return 200 if user is logged out', async () => {
+            const res = await request(app).get(`${baseURI}/logout`).set('x-auth-token', null)
+            expect(res.status).toEqual(200);
+        })
+    })
 });
