@@ -217,7 +217,7 @@ describe("Users Controller", () => {
     describe('Get user details', () => {
         it('should return 200 if the  user details are found', async () => {
             const id = mongoose.Types.ObjectId().toHexString();
-            const token = jwt.sign({_id: user._id, roleId: user.roleId }, secretKey)
+            const token = jwt.sign({_id: id, roleId: 2 }, secretKey)
             const decoded = jwt.verify(token, secretKey);
             const res = await request(app)
             .get(`${baseURI}/me`)
