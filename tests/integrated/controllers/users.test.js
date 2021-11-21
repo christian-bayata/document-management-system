@@ -301,6 +301,56 @@ describe("Users Controller", () => {
         it('should return 200 if user is logged out', async () => {
             const res = await request(app).get(`${baseURI}/logout`).set('x-auth-token', null)
             expect(res.status).toEqual(200);
-        })
-    })
+            expect(res.body.message).toMatch(/logged out/i);
+        });
+    });
+
+    describe('ADMIN - Get all users', () => {
+        it('should return 403 if user is not eligible to get all users', async () => {
+            const id = mongoose.Types.ObjectId().toHexString();
+            const token = jwt.sign({_id: id, roleId: 2 }, secretKey);
+
+            const res = await request(app).get(`${baseURI}/users`).set('x-auth-token', token);
+            expect(res.status).toEqual(403);
+            expect(res.body.message).toMatch(/access/i);
+        });
+
+        it('should return 200 if all users are gotten', async () => {
+            
+            await User.collection.insertMany([
+                {
+                userName: "userName1_test",
+                firstName: "firstName1_test",
+                lastName: "lastName1_test",
+                email: "userEmail1_test@gmail.com",
+                password: "user1_password",
+                roleId: 2  
+                },
+                {
+                userName: "userName2_test",
+                firstName: "firstName2_test",
+                lastName: "lastName2_test",
+                email: "userEmail2_test@gmail.com",
+                password: "user2_password",
+                roleId: 2  
+                },
+                {
+                userName: "userName3_test",
+                firstName: "firstName3_test",
+                lastName: "lastName3_test",
+                email: "userEmail3_test@gmail.com",
+                password: "user3_password",
+                roleId: 2  
+                }
+            ]);
+            const id = mongoose.Types.ObjectId().toHexString();
+            const token = jwt.sign({_id: id, roleId: 1 }, secretKey)
+  
+            const res = await request(app).get(`${baseURI}/users`).set('x-auth-token', token);
+            expect(res.status).toEqual(200);
+            expect(res.body.message).toMatch(/all users/i);
+        });
+    });
+
+
 });
