@@ -352,5 +352,59 @@ describe("Users Controller", () => {
         });
     });
 
+    describe('ADMIN - Get user by id', () => {
+        it('should return 400 if the user ID is not found', async () => {
+             const id = mongoose.Types.ObjectId().toHexString();
+            const token = jwt.sign({_id: id, roleId: 2 }, secretKey);
 
+            const res = await request(app).get(`${baseURI}/12234fgdjy789hj`).set('x-auth-token', token);
+            expect(res.status).toEqual(404);
+        });
+
+        it('should return 200 if the user ID is found, and get it', async () => {
+            const user = await User.create({
+                userName: "Wiwi",
+                firstName: "Wisdom",
+                lastName: "Alakija",
+                email: "wiz_alak@gmail.com",
+                password: "wiz123",
+                roleId: 2
+            });
+            
+           const id = mongoose.Types.ObjectId().toHexString();
+           const token = jwt.sign({_id: id, roleId: 1 }, secretKey);
+
+           const res = await request(app).get(`${baseURI}/user/${user._id}`).set('x-auth-token', token);
+           expect(res.status).toEqual(200);
+           expect(res.body.message).toMatch(/user with id/i);
+       });
+    });
+    
+    describe('ADMIN - Delete user by id', () => {
+        it('should return 400 if the user ID is not found', async () => {
+             const id = mongoose.Types.ObjectId().toHexString();
+            const token = jwt.sign({_id: id, roleId: 1 }, secretKey);
+
+            const res = await request(app).delete(`${baseURI}/delete/12234fgdjy789hj`).set('x-auth-token', token);
+            expect(res.status).toEqual(404);
+        });
+
+        it('should return 200 if the user ID is found, and delete it', async () => {
+            const user = await User.create({
+                userName: "aba",
+                firstName: "domi",
+                lastName: "Daga",
+                email: "domidaga@gmail.com",
+                password: "domi123",
+                roleId: 2
+            });
+            
+           const id = mongoose.Types.ObjectId().toHexString();
+           const token = jwt.sign({_id: id, roleId: 1 }, secretKey);
+
+           const res = await request(app).delete(`${baseURI}/delete/user/${user._id}`).set('x-auth-token', token);
+           expect(res.status).toEqual(200);
+           expect(res.body.message).toMatch(/deleted user/i);
+       });
+    });
 });
