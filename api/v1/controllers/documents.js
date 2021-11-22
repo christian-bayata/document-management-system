@@ -13,6 +13,7 @@ class DocumentController {
      * @param req
      * @param res
      * @param next
+     * @route - /api/v1/document/create
      * @returns {Object} 
      */
 
@@ -41,20 +42,48 @@ class DocumentController {
      * @param req
      * @param res
      * @param next
+     * @route - /api/v1/documents
      * @returns {Object} 
     */
 
     async getDocuments(req, res, next) {
         return helpCalls(async () => {
-            
-            const ownerId = await User.findById(req.user._id);
+            //Check for the Id of the user from the token passed
+            const ownerId = await UserRepository.findById(req.user._id);
             if(!ownerId) return Response.requestNotFound({ res, message: "User with this ID not found" }); 
             
+            //Only finds the document of the currently logged-in user
             const documents = await DocumentRepository.find({ownerId});
-            
-            res.status(200).json({
-                success: true,
-                documents
+            return Response.success({ res, message: "Successfully retrieved all your documents", body: documents });
+        }, next);
+    };
+
+    /**
+     * @Responsibilty - Update user document
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/document/update/:id
+     * @returns {Object} 
+    */
+
+    async updateDocument(req, res, next) {
+        return helpCalls(async () => {
+            //Using the QUERY FIRST approach for updating, we have:
+            const document = await DocumentRepository.findById(req.params.id);
+            if(!document) return Response.requestNotFound({ 
+                res, 
+                message: `document with id, ${req.params.id}, does not exist`
+            })
+
+            //Update the document
+            document.title = req.body.title;
+            document.content = req.body.content;
+
+            return Response.success({ 
+                res, 
+                message: "Successfully updated your document", 
+                body: document 
             });
         }, next);
     };
