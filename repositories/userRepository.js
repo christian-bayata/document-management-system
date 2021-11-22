@@ -19,7 +19,7 @@ class UserRepository {
      * @returns {Promise<void>}
      */
 
-     async findUsingEmail(email) {
+     async findUsingEmail(email) { 
         return await this.user.findOne({email});
     };
 
