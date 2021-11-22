@@ -84,7 +84,7 @@ userSchema.plugin(mongoosastic, {
 
 const User =  mongoose.model('User', userSchema);
 
-// //Mongoosastic mapping settings
+// //Mongoosastic mapping settings 
 // User.createMapping((err, mapping) => {
 // 	// if(err) {
 // 	// 	console.log("Could not create mapping ", err);

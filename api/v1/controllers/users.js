@@ -204,14 +204,14 @@ class UserController {
      * @param req
      * @param res
      * @param next
-     * @route - /api/v1/delete/user/:id
+     * @route - /api/v1/delete/user/:id 
      * @returns {Object} 
      */
 
     async deleteUser(req, res, next) {
         return helpCalls(async () => {
             const id = req.params.id;
-            const user = await User.findById(id);
+            const user = await UserRepository.findById(id);
             if(!user) return Response.requestNotFound({res, message: `user with ID ${id} is not found`});
 
             await user.deleteOne();

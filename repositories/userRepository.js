@@ -40,6 +40,8 @@ class UserRepository {
         return await this.user.findById(id);
     };
 
+    
+
     /**
      *
      * @param query

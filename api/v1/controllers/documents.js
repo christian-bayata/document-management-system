@@ -2,7 +2,8 @@ import Document from '../../../models/documents';
 import helpCalls from '../../../helper/helpCalls';
 import Response from '../../../utils/response';
 import { validateCreateDoc } from '../../../validations/documents/validate-create-document';
-import User from '../../../models/users';
+import UserRepository from '../../../repositories/userRepository';
+import DocumentRepository from '../../../repositories/documentRepository';
 
 class DocumentController {
     /**
@@ -14,17 +15,17 @@ class DocumentController {
      * @returns {Object} 
      */
 
-    async create(req, res, next) {
+    async createDocument(req, res, next) {
         return helpCalls(async () => {
             const { error }  = await validateCreateDoc(req.body); 
             if(error) return Response.badRequest({res, message: error.details[0].message})
     
             const { title, content, access } = req.body;
             
-            const ownerId = await User.findById(req.user._id);
+            const ownerId = await UserRepository.findById(req.user._id);
             if(!ownerId) return Response.requestNotFound({ res, message: "User with this ID not found" });
             
-            const document = await Document.create({
+            const document = await DocumentRepository.create({
                 title, 
                 content,
                 access, 
@@ -34,7 +35,7 @@ class DocumentController {
         }, next);
     };
 
-    async get(req, res, next) {
+    async getDocuments(req, res, next) {
         const documents = await Document.find();
 
         res.status(200).json({
