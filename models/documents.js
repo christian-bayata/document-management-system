@@ -20,7 +20,8 @@ const documentSchema = new mongoose.Schema({
        } 
     },
     ownerId: {
-        type: Number
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 

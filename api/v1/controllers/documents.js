@@ -2,6 +2,7 @@ import Document from '../../../models/documents';
 import helpCalls from '../../../helper/helpCalls';
 import Response from '../../../utils/response';
 import { validateCreateDoc } from '../../../validations/documents/validate-create-document';
+import User from '../../../models/users';
 
 class DocumentController {
     /**
@@ -18,11 +19,15 @@ class DocumentController {
             const { error }  = await validateCreateDoc(req.body); 
             if(error) return Response.badRequest({res, message: error.details[0].message})
     
-            const { title, content, access, ownerId } = req.body;
+            const { title, content, access } = req.body;
+            
+            const ownerId = await User.findById(req.user._id);
+            if(!ownerId) return Response.requestNotFound({ res, message: "User with this ID not found" });
+            
             const document = await Document.create({
                 title, 
                 content,
-                access,
+                access, 
                 ownerId
             });
            return Response.success({res, message: "New Document Has Been Created Successfully", body: document});
