@@ -70,7 +70,11 @@ class DocumentController {
     async updateDocument(req, res, next) {
         return helpCalls(async () => {
             //Using the QUERY FIRST approach for updating, we have:
-            const document = await Document.findById(req.params.id);
+            const document = await DocumentRepository.findById(req.params.id);
+            if(!document) return Response.requestNotFound({ 
+                res, 
+                message: `Document with id, ${req.params.id} does not exist` 
+            });
 
             if(String(document.ownerId) !== String(req.user._id)) {
                 return Response.notAuthorized({ 
@@ -93,6 +97,15 @@ class DocumentController {
         }, next);
     };
 
+    /**
+     * @Responsibilty - Update user document
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/document/delete/:id
+     * @returns {Object} 
+    */
+
     async deleteDocument(req, res, next) {
         return helpCalls(async () => { 
             const id = req.params.id;
@@ -102,6 +115,26 @@ class DocumentController {
             await document.deleteOne();
             return Response.success({res, message: `Successfully deleted document with ID ${id}`});
         }, next)
-    }
+    };
+
+     // ..................................................................................................
+    //ADMIN
+    
+    /**
+     * @Responsibilty - Get all documents
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/admin/documents
+     * @returns {Object} 
+    */
+
+     async getAllDocuments(req, res, next) {
+        return helpCalls(async () => { 
+            const documents = await DocumentRepository.find();
+
+            return Response.success({res, message: `Successfully retireved all documents`, body: documents});
+        }, next)
+    };
 };
 export default new DocumentController;
