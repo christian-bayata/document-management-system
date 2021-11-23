@@ -168,7 +168,7 @@ class DocumentController {
 
     async searchDocuments(req, res, next) {
         return helpCalls(async () => { 
-           let functionality = new Functionality(Document.find(), req.query).search();
+           let functionality = new Functionality(Document.find(), req.query).searchDocumentsByTitle();
 
            const documents = await functionality.query;
            const count = documents.length;

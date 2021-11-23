@@ -1,6 +1,7 @@
 import status from 'http-status';
 
 class Response {
+    
     /**
      * @param res
      * @param statusCode

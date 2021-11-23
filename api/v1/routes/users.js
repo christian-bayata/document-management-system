@@ -14,12 +14,12 @@ router.route('/me/update').put(isUserAuthenticated, userController.updateUser);
 
 router.route('/logout').get(userController.logout);
 
-router.route('/users').get(isUserAuthenticated, isUserAuthorized, userController.getAllUsers);
+router.route('/admin/users').get(isUserAuthenticated, isUserAuthorized, userController.getAllUsers);
 
-router.route('/user/:id').get(isUserAuthenticated, isUserAuthorized, userController.getUserById);
+router.route('/admin/user/:id').get(isUserAuthenticated, isUserAuthorized, userController.getUserById);
 
-router.route('/user/search').get(isUserAuthenticated, isUserAuthorized, userController.getUserByUsernames);
+router.route('/admin/users/search').get(isUserAuthenticated, isUserAuthorized, userController.searchUsers);
 
-router.route('/delete/user/:id').delete(isUserAuthenticated, isUserAuthorized, userController.deleteUser);
+router.route('/admin/delete/user/:id').delete(isUserAuthenticated, isUserAuthorized, userController.deleteUser);
 
 export default router;

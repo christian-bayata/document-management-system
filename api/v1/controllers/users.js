@@ -6,6 +6,7 @@ import helpCalls from '../../../helper/helpCalls';
 import _ from 'lodash';
 import Response from '../../../utils/response';
 import UserRepository from '../../../repositories/userRepository';
+import Functionality from '../../../utils/functionality';
 
 class UserController {
      
@@ -147,7 +148,7 @@ class UserController {
      * @param req
      * @param res
      * @param next
-     * @route - /api/v1/users
+     * @route - /api/v1/admin/users
      * @returns {Object} 
      */
 
@@ -163,7 +164,7 @@ class UserController {
      * @param req
      * @param res
      * @param next
-     * @route - /api/v1/user/:id
+     * @route - /api/v1/admin/user/:id
      * @returns {Object} 
      */
 
@@ -181,21 +182,16 @@ class UserController {
      * @param req
      * @param res
      * @param next
-     * @route - /api/v1/user/search
+     * @route - /api/v1/admin/user/search
      * @returns {Object} 
      */
 
-     async getUserByUsernames(req, res, next) {
+     async searchUsers(req, res, next) {
         return helpCalls( async () => {
-            const { query } = req.query;
-            const result = await UserRepository.search(query);
-            if (!result || !result.hits) {
-                return response.requestNotFound({ res, message: `No results found for ${query}` });
-            }
-            hits = result.hits.hits.map((hit) => {
-                return hit._source;
-            });
-            return response.success({ res, message: `Search for Answer: ${query}`, body: hits });
+            let functionality = new Functionality(User.find(), req.query).searchUserByUsername();
+           
+            const user = await functionality.query;
+            return Response.success({ res, message: "Successfully searched users", body: user });
         }, next)
     };
 
@@ -204,7 +200,7 @@ class UserController {
      * @param req
      * @param res
      * @param next
-     * @route - /api/v1/delete/user/:id 
+     * @route - /api/v1/admin/delete/user/:id 
      * @returns {Object} 
      */
 
