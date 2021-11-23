@@ -24,7 +24,7 @@ class UserRepository {
     };
 
     /** 
-     * @returns {Promise<void>}
+     * @returns {Promise<void>} 
      */
 
      async findAll() {

@@ -10,4 +10,6 @@ router.route('/documents').get(isUserAuthenticated, DocumentController.getDocume
 
 router.route('/document/update/:id').put(isUserAuthenticated, DocumentController.updateDocument);
 
+router.route('/document/delete/:id').put(isUserAuthenticated, DocumentController.deleteDocument);
+
 export default router;

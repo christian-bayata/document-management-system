@@ -35,7 +35,7 @@ const isUserAuthorized = (req, res, next) => {
     }
     next();
 }
-
+    
 export {
     isUserAuthenticated,
     isUserAuthorized

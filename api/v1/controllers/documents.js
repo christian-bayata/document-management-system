@@ -70,22 +70,38 @@ class DocumentController {
     async updateDocument(req, res, next) {
         return helpCalls(async () => {
             //Using the QUERY FIRST approach for updating, we have:
-            const document = await DocumentRepository.findById(req.params.id);
-            if(!document) return Response.requestNotFound({ 
-                res, 
-                message: `document with id, ${req.params.id}, does not exist`
-            })
+            const document = await Document.findById(req.params.id);
+
+            if(String(document.ownerId) !== String(req.user._id)) {
+                return Response.notAuthorized({ 
+                    res, 
+                    message: "You are not authorized to update this document" 
+                });
+            };
 
             //Update the document
             document.title = req.body.title;
             document.content = req.body.content;
 
+            await document.save();
+            
             return Response.success({ 
                 res, 
                 message: "Successfully updated your document", 
-                body: document 
+                body: document
             });
         }, next);
     };
+
+    async deleteDocument(req, res, next) {
+        return helpCalls(async () => { 
+            const id = req.params.id;
+            const document = await DocumentRepository.findById(id);
+            if(!document) return Response.requestNotFound({res, message: `document with ID ${id} is not found`});
+
+            await document.deleteOne();
+            return Response.success({res, message: `Successfully deleted document with ID ${id}`});
+        }, next)
+    }
 };
 export default new DocumentController;

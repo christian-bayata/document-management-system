@@ -121,8 +121,7 @@ class UserController {
 
             return Response.success({ res, message: "User details have been successfully updated", body: user});
         }, next)
-        
-    }
+    };
 
     /**
      * @Responsibilty - Logs out a user

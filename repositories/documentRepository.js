@@ -23,7 +23,7 @@ class DocumentRepository {
         return await this.doc.find(doc).select('-access');
     };
 
-    /**
+    /** 
      * @param id
      * @returns {Promise<void>}
      */
