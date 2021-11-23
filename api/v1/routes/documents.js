@@ -14,4 +14,6 @@ router.route('/document/delete/:id').put(isUserAuthenticated, DocumentController
 
 router.route('/admin/documents').get(isUserAuthenticated, isUserAuthorized, DocumentController.getAllDocuments);
 
+router.route('/admin/document/:id').get(isUserAuthenticated, isUserAuthorized, DocumentController.getSingleDocument);
+
 export default router;

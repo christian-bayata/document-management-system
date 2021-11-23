@@ -136,5 +136,25 @@ class DocumentController {
             return Response.success({res, message: `Successfully retireved all documents`, body: documents});
         }, next)
     };
+
+    /**
+     * @Responsibilty - Get a document by its id
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/admin/document/:id
+     * @returns {Object} 
+    */
+
+     async getSingleDocument(req, res, next) {
+        return helpCalls(async () => { 
+            const id = req.params.id;
+            const document = await DocumentRepository.findById(id);
+            if(!document) return Response.requestNotFound({res, message: `document with ID ${id} is not found`});
+
+            return Response.success({res, message: `Successfully retrieved document with ID ${id}`, body: document});
+        }, next)
+    };
 };
+
 export default new DocumentController;
