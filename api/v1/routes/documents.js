@@ -16,4 +16,6 @@ router.route('/admin/documents').get(isUserAuthenticated, isUserAuthorized, Docu
 
 router.route('/admin/document/:id').get(isUserAuthenticated, isUserAuthorized, DocumentController.getSingleDocument);
 
+router.route('/admin/documents/search').get(isUserAuthenticated, isUserAuthorized, DocumentController.searchDocuments);
+
 export default router;

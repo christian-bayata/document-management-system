@@ -5,6 +5,7 @@ import User from '../../../models/users';
 import { validateCreateDoc } from '../../../validations/documents/validate-create-document';
 import UserRepository from '../../../repositories/userRepository';
 import DocumentRepository from '../../../repositories/documentRepository';
+import Functionality from '../../../utils/functionality';
 
 class DocumentController {
     /**
@@ -153,7 +154,26 @@ class DocumentController {
             if(!document) return Response.requestNotFound({res, message: `document with ID ${id} is not found`});
 
             return Response.success({res, message: `Successfully retrieved document with ID ${id}`, body: document});
-        }, next)
+        }, next);
+    };
+
+    /**
+     * @Responsibilty - Get a document by its title
+     * @param req
+     * @param res
+     * @param next
+     * @route - /api/v1/admin/document/search?keyword={}
+     * @returns {Object} 
+    */
+
+    async searchDocuments(req, res, next) {
+        return helpCalls(async () => { 
+           let functionality = new Functionality(Document.find(), req.query).search();
+
+           const documents = await functionality.query;
+           const count = documents.length;
+           return Response.success({ res, message: "Successfully searched documents", body: {count, documents } });
+        }, next);
     };
 };
 
