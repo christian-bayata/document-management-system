@@ -119,6 +119,31 @@ describe("Users Controller", () => {
                 .set('x-auth-token', token)
                 .send(document) 
             expect(document.ownerId).toEqual(decoded._id);
+            expect(res.header).toBeDefined();
+        });
+        //TODO... test for 200 if user creates document
+    });
+
+    describe('User retrieves all documents', () => {
+        it('should return 404 if user Id is not found', async () => {
+            const token = (new User()).generateAuthToken();
+            const user = new User({
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie111@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
+            user._id = mongoose.Types.ObjectId();
+            await user.save();
+            
+            const res = await request(app)
+                .get(`${baseURI}/documents`)
+                .set('x-auth-token', token)
+                .send(user);
+            expect(res.status).toEqual(404);     
+            expect(res.body.message).toMatch(/not found/i);    
         });
     });
 });
