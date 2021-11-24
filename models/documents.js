@@ -10,7 +10,7 @@ const documentSchema = new mongoose.Schema({
     content: {
         type: String,
         required: true,
-        minlength: 5
+        minlength: 5 
     }, 
     access: {
        type: String,

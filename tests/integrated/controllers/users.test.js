@@ -174,7 +174,7 @@ describe("Users Controller", () => {
             expect(res.body.message).toMatch(/password/i);
         });
 
-        it('should return 404 if user email cannot be found in the database', async () => {
+        it('should return 400 if user email cannot be found in the database', async () => {
             const userPayload = {
                 email: "user@gmail.com",
                 password: "frank123"
@@ -282,19 +282,15 @@ describe("Users Controller", () => {
 
         it('should update user details and return 200', async () => {
             const token = (new User()).generateAuthToken();
-            const userPayload = {
-                userName: "userName",
-                firstName: "firstName",
-                lastName: "lastName",
-                email: "tester@gmail.com",
-            };
-            const res = await request(app)
-            .put(`${baseURI}/me/update`)
-            .set('x-auth-token', token)
-            .send(userPayload);
+            const userDetails = {
+                userName: "Frank11",
+                firstName: "Franklyne",
+                lastName: "Osas",
+                email: "franksagie1234@gmail.com"
+            }
+            const res = await request(app).put(`${baseURI}/me/update`).set('x-auth-token', token).send(userDetails);
             expect(res.status).toEqual(200);
-            expect(res.body.message).toMatch(/successfully updated/i);      
-        });
+        }); 
     });
 
     describe('Log out a user', () => {
@@ -310,7 +306,7 @@ describe("Users Controller", () => {
             const id = mongoose.Types.ObjectId().toHexString();
             const token = jwt.sign({_id: id, roleId: 2 }, secretKey);
 
-            const res = await request(app).get(`${baseURI}/users`).set('x-auth-token', token);
+            const res = await request(app).get(`${baseURI}/admin/users`).set('x-auth-token', token);
             expect(res.status).toEqual(403);
             expect(res.body.message).toMatch(/access/i);
         });
@@ -346,7 +342,7 @@ describe("Users Controller", () => {
             const id = mongoose.Types.ObjectId().toHexString();
             const token = jwt.sign({_id: id, roleId: 1 }, secretKey)
   
-            const res = await request(app).get(`${baseURI}/users`).set('x-auth-token', token);
+            const res = await request(app).get(`${baseURI}/admin/users`).set('x-auth-token', token);
             expect(res.status).toEqual(200);
             expect(res.body.message).toMatch(/all users/i);
         });
@@ -374,7 +370,7 @@ describe("Users Controller", () => {
            const id = mongoose.Types.ObjectId().toHexString();
            const token = jwt.sign({_id: id, roleId: 1 }, secretKey);
 
-           const res = await request(app).get(`${baseURI}/user/${user._id}`).set('x-auth-token', token);
+           const res = await request(app).get(`${baseURI}/admin/user/${user._id}`).set('x-auth-token', token);
            expect(res.status).toEqual(200);
            expect(res.body.message).toMatch(/user with id/i);
        });
@@ -385,7 +381,7 @@ describe("Users Controller", () => {
              const id = mongoose.Types.ObjectId().toHexString();
             const token = jwt.sign({_id: id, roleId: 1 }, secretKey);
 
-            const res = await request(app).delete(`${baseURI}/delete/12234fgdjy789hj`).set('x-auth-token', token);
+            const res = await request(app).delete(`${baseURI}/admin/delete/12234fgdjy789hj`).set('x-auth-token', token);
             expect(res.status).toEqual(404);
         });
 
@@ -402,7 +398,7 @@ describe("Users Controller", () => {
            const id = mongoose.Types.ObjectId().toHexString();
            const token = jwt.sign({_id: id, roleId: 1 }, secretKey);
 
-           const res = await request(app).delete(`${baseURI}/delete/user/${user._id}`).set('x-auth-token', token);
+           const res = await request(app).delete(`${baseURI}/admin/delete/user/${user._id}`).set('x-auth-token', token);
            expect(res.status).toEqual(200);
            expect(res.body.message).toMatch(/deleted user/i);
        });

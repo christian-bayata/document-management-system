@@ -108,18 +108,24 @@ class UserController {
      async updateUser(req, res, next) {
          return helpCalls(async () => {
              //Using the QUERY FIRST approach for updating, we have:
-            const user = await UserRepository.findById(req.user._id);
-            if(!user) return Response.requestNotFound({ 
-                res, 
-                message: `User with id, ${req.params.id}, does not exist`
-            });
+            // const user = await UserRepository.findById(req.user._id);
+            // if(!user) return Response.requestNotFound({ 
+            //     res, 
+            //     message: `User with id, ${req.user._id}, does not exist`
+            // });
             //Update the document
-            user.userName = req.body.userName;
-            user.firstName = req.body.firstName;
-            user.lastName = req.body.lastName;
-            user.email = req.body.email;
-        
-
+            const userDetails = {
+                userName: req.body.userName,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email  
+            }
+            const user = await User.findByIdAndUpdate(req.user._id, userDetails, {
+                new: true,
+                runValidators: true,
+                useFindAndModify: false
+            });
+            
             return Response.success({ res, message: "User details have been successfully updated", body: user});
         }, next)
     };

@@ -4,7 +4,7 @@ import Joi from 'joi';
     @params: doc
     @returns: {*} 
 */
-
+ 
 export const validateCreateDoc = (doc) => {
     
     const schema = Joi.object({

@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     userName: {
 		type: String,
 		required: true,
+		es_indexed: true
 	},
     firstName: {
 		type: String,
