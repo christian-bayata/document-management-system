@@ -92,35 +92,35 @@ describe("Users Controller", () => {
             expect(res.body.message).toMatch(/not found/i);         
         });
 
-        it('should pass if document ownerId is equal to the user Id', async () => {
-            const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
+        // it('should pass if document ownerId is equal to the user Id', async () => {
+        //     const token = (new User()).generateAuthToken();
+        //     const decoded = jwt.verify(token, secretKey);
 
-            let user = await User.insertMany({
-                userName: "Frankie11",
-                firstName: "Frank1",
-                lastName: "Osagie1",
-                email: "franksagie1111@gmail.com",
-                password: "frank1234",
-                roleId: 2
-            });
+        //     let user = await User.insertMany({
+        //         userName: "Frankie11",
+        //         firstName: "Frank1",
+        //         lastName: "Osagie1",
+        //         email: "franksagie1111@gmail.com",
+        //         password: "frank1234",
+        //         roleId: 2
+        //     });
 
-            user._id = decoded._id;
+        //     user._id = decoded._id;
 
-            let document = {
-                title: "doc_title",
-                content: "doc_content",
-                access: "private"
-            };
-            document.ownerId = user._id;
+        //     let document = {
+        //         title: "doc_title",
+        //         content: "doc_content",
+        //         access: "private"
+        //     };
+        //     document.ownerId = user._id;
 
-            const res = await request(app)
-                .post(`${baseURI}/document/create`)
-                .set('x-auth-token', token)
-                .send(document) 
-            expect(document.ownerId).toEqual(decoded._id);
-            expect(res.header).toBeDefined();
-        });
+        //     const res = await request(app)
+        //         .post(`${baseURI}/document/create`)
+        //         .set('x-auth-token', token)
+        //         .send(document) 
+        //     expect(document.ownerId).toEqual(decoded._id);
+        //     expect(res.header).toBeDefined();
+        // });
         //TODO... test for 200 if user creates document
     });
 
@@ -144,6 +144,28 @@ describe("Users Controller", () => {
                 .send(user);
             expect(res.status).toEqual(404);     
             expect(res.body.message).toMatch(/not found/i);    
+        });
+
+        it('should return 200 if user Id is found', async () => {
+            
+            const token = (new User()).generateAuthToken();
+            const decoded = jwt.verify(token, secretKey);
+
+            let user = await User.insertMany({
+                _id: decoded._id,
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie1111@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
+           
+            const res = await request(app)
+                .get(`${baseURI}/documents`)
+                .set('x-auth-token', token)
+            expect(res.status).toEqual(200);
+            expect(res.body.message).toMatch(/successfully retrieved/i);
         });
     });
 });

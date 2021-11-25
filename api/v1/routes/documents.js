@@ -1,6 +1,6 @@
 import express from 'express';
 import DocumentController from '../controllers/documents'; 
-const router = express.Router();
+const router = express.Router(); 
 
 import { isUserAuthenticated, isUserAuthorized } from '../../../middlewares/auth';
 
