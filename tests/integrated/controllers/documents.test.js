@@ -141,7 +141,6 @@ describe("Users Controller", () => {
             const res = await request(app)
                 .get(`${baseURI}/documents`)
                 .set('x-auth-token', token)
-                .send(user);
             expect(res.status).toEqual(404);     
             expect(res.body.message).toMatch(/not found/i);    
         });
@@ -172,8 +171,7 @@ describe("Users Controller", () => {
     describe('User updates document', () => {
         it('should return 404 if document Id is not found', async () => {
             const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
-
+            
             await Document.insertMany({
                 title: "doc_title",
                 content: "doc_content",
@@ -262,6 +260,85 @@ describe("Users Controller", () => {
                 .send(documentPayload);
             expect(res.status).toEqual(200);     
             expect(res.body.message).toMatch(/successfully updated/i);    
+        });
+    });
+
+    describe('User deletes document', () => {
+        it('should return 404 if document Id is not found', async () => {
+            const token = (new User()).generateAuthToken();
+            let document = await Document.insertMany({ 
+                title: "doc_title",
+                content: "doc_content",
+                access: "private",    
+                ownerId: mongoose.Types.ObjectId().toHexString()
+            })
+
+            document._id = mongoose.Types.ObjectId().toHexString();
+            
+            const res = await request(app)
+                .delete(`${baseURI}/document/delete/${document._id}`)
+                .set('x-auth-token', token)
+            expect(res.status).toEqual(404);     
+            expect(res.body.message).toMatch(/not found/);     
+        });
+
+        it('should return 401 if document Id is not the same as owner Id', async () => {
+            const token = (new User()).generateAuthToken();
+            const decoded = jwt.verify(token, secretKey);
+
+            const user = await User.insertMany({
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie00001@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
+
+            user._id = decoded.id;
+
+            let document = await Document.create({
+                title: "doc_title",
+                content: "doc_content",
+                access: "private",    
+                ownerId: mongoose.Types.ObjectId()
+            });
+            await document.save();
+
+            const res = await request(app)
+                .delete(`${baseURI}/document/delete/${document._id}`)
+                .set('x-auth-token', token)
+            expect(res.status).toEqual(401);     
+            expect(res.body.message).toMatch(/not authorized/i);    
+        });
+
+        it('should return 200 if document has been deleted', async () => {
+            const token = (new User()).generateAuthToken();
+            const decoded = jwt.verify(token, secretKey);
+
+            let user = await User.insertMany({
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie0002@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
+            user._id = decoded._id;
+            
+            let document = await Document.create({
+                title: "doc_title",
+                content: "doc_content",
+                access: "private",    
+                ownerId: mongoose.Types.ObjectId(user._id)
+            });
+            await document.save();
+
+            const res = await request(app)
+                .delete(`${baseURI}/document/delete/${document._id}`)
+                .set('x-auth-token', token)
+            expect(res.status).toEqual(200);     
+            expect(res.body.message).toMatch(/successfully deleted/i);    
         });
     });
 });

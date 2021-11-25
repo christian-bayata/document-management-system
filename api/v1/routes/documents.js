@@ -10,7 +10,7 @@ router.route('/documents').get(isUserAuthenticated, DocumentController.getDocume
 
 router.route('/document/update/:id').put(isUserAuthenticated, DocumentController.updateDocument);
 
-router.route('/document/delete/:id').put(isUserAuthenticated, DocumentController.deleteDocument);
+router.route('/document/delete/:id').delete(isUserAuthenticated, DocumentController.deleteDocument);
 
 router.route('/admin/documents').get(isUserAuthenticated, isUserAuthorized, DocumentController.getAllDocuments);
 

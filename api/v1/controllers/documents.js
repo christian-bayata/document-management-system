@@ -113,6 +113,13 @@ class DocumentController {
             const document = await DocumentRepository.findById(id);
             if(!document) return Response.requestNotFound({res, message: `document with ID ${id} is not found`});
 
+            if(String(document.ownerId) !== String(req.user._id)) {
+                return Response.notAuthorized({ 
+                    res, 
+                    message: "You are not authorized to delete this document" 
+                });
+            };
+
             await document.deleteOne();
             return Response.success({res, message: `Successfully deleted document with ID ${id}`});
         }, next)
