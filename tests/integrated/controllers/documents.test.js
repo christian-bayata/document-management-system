@@ -92,35 +92,35 @@ describe("Users Controller", () => {
             expect(res.body.message).toMatch(/not found/i);         
         });
 
-        // it('should pass if document ownerId is equal to the user Id', async () => {
-        //     const token = (new User()).generateAuthToken();
-        //     const decoded = jwt.verify(token, secretKey);
+        it('should pass if document ownerId is equal to the user Id', async () => {
+            const token = (new User()).generateAuthToken();
+            const decoded = jwt.verify(token, secretKey);
 
-        //     let user = await User.insertMany({
-        //         userName: "Frankie11",
-        //         firstName: "Frank1",
-        //         lastName: "Osagie1",
-        //         email: "franksagie1111@gmail.com",
-        //         password: "frank1234",
-        //         roleId: 2
-        //     });
+            let user = await User.insertMany({
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie1111@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
 
-        //     user._id = decoded._id;
+            user._id = decoded._id;
 
-        //     let document = {
-        //         title: "doc_title",
-        //         content: "doc_content",
-        //         access: "private"
-        //     };
-        //     document.ownerId = user._id;
+            let document = {
+                title: "doc_title",
+                content: "doc_content",
+                access: "private"
+            };
+            document.ownerId = user._id;
 
-        //     const res = await request(app)
-        //         .post(`${baseURI}/document/create`)
-        //         .set('x-auth-token', token)
-        //         .send(document) 
-        //     expect(document.ownerId).toEqual(decoded._id);
-        //     expect(res.header).toBeDefined();
-        // });
+            const res = await request(app)
+                .post(`${baseURI}/document/create`)
+                .set('x-auth-token', token)
+                .send(document) 
+            expect(document.ownerId).toEqual(decoded._id);
+            expect(res.header).toBeDefined();
+        });
         //TODO... test for 200 if user creates document
     });
 
@@ -131,7 +131,7 @@ describe("Users Controller", () => {
                 userName: "Frankie11",
                 firstName: "Frank1",
                 lastName: "Osagie1",
-                email: "franksagie111@gmail.com",
+                email: "franksagie101@gmail.com",
                 password: "frank1234",
                 roleId: 2
             });
@@ -151,12 +151,12 @@ describe("Users Controller", () => {
             const token = (new User()).generateAuthToken();
             const decoded = jwt.verify(token, secretKey);
 
-            let user = await User.insertMany({
+            await User.insertMany({
                 _id: decoded._id,
                 userName: "Frankie11",
                 firstName: "Frank1",
                 lastName: "Osagie1",
-                email: "franksagie1111@gmail.com",
+                email: "franksagie1000@gmail.com",
                 password: "frank1234",
                 roleId: 2
             });
@@ -166,6 +166,102 @@ describe("Users Controller", () => {
                 .set('x-auth-token', token)
             expect(res.status).toEqual(200);
             expect(res.body.message).toMatch(/successfully retrieved/i);
+        });
+    });
+
+    describe('User updates document', () => {
+        it('should return 404 if document Id is not found', async () => {
+            const token = (new User()).generateAuthToken();
+            const decoded = jwt.verify(token, secretKey);
+
+            await Document.insertMany({
+                title: "doc_title",
+                content: "doc_content",
+                access: "private",
+                ownerId: mongoose.Types.ObjectId().toHexString()    
+            });
+
+            const document = {
+                title: "doc_title1",
+                content: "doc_content_1"
+            }
+
+            const res = await request(app)
+                .put(`${baseURI}/document/update/111111111111`)
+                .set('x-auth-token', token)
+                .send(document);
+            expect(res.status).toEqual(404);     
+            expect(res.body.message).toMatch(/does not exist/i);    
+        });
+
+        it('should return 401 if document Id is not the same as owner Id', async () => {
+            const token = (new User()).generateAuthToken();
+            const decoded = jwt.verify(token, secretKey);
+
+            const user = await User.insertMany({
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie001@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
+
+            user._id = decoded.id;
+
+            let document = await Document.create({
+                title: "doc_title",
+                content: "doc_content",
+                access: "private",    
+                ownerId: mongoose.Types.ObjectId()
+            });
+            await document.save();
+
+            const documentPayload = {
+                title: "doc_title1",
+                content: "doc_content_1"
+            }
+
+            const res = await request(app)
+                .put(`${baseURI}/document/update/${document._id}`)
+                .set('x-auth-token', token)
+                .send(documentPayload);
+            expect(res.status).toEqual(401);     
+            expect(res.body.message).toMatch(/not authorized/i);    
+        });
+
+        it('should return 200 if document has been updated', async () => {
+            const token = (new User()).generateAuthToken();
+            const decoded = jwt.verify(token, secretKey);
+
+            let user = await User.insertMany({
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie002@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
+            user._id = decoded._id
+            
+            let document = await Document.create({
+                title: "doc_title",
+                content: "doc_content",
+                access: "private",    
+                ownerId: mongoose.Types.ObjectId(user._id)
+            })
+
+            const documentPayload = {
+                title: "doc_title_1",
+                content: "doc_content_1"
+            };
+            
+            const res = await request(app)
+                .put(`${baseURI}/document/update/${document._id}`)
+                .set('x-auth-token', token)
+                .send(documentPayload);
+            expect(res.status).toEqual(200);     
+            expect(res.body.message).toMatch(/successfully updated/i);    
         });
     });
 });
