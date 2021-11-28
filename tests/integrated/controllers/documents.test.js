@@ -9,6 +9,11 @@ import { secretKey } from '../../../settings';
 const baseURI = '/api/v1';
 let app; 
 
+let token;
+let decoded;
+let user;
+let document;
+
 describe("Users Controller", () => {
     
     beforeAll(async () => {
@@ -23,6 +28,34 @@ describe("Users Controller", () => {
     });
     
     describe('Create new document', () => {
+
+        const exec = async () => {
+            return await request(app)
+                .post(`${baseURI}/document/create`)
+                .set('x-auth-token', token)
+                .send(document)
+        };
+
+        beforeEach(async () => {
+            token = (new User()).generateAuthToken();
+            decoded = jwt.verify(token, secretKey);
+
+            user = new User({
+                userName: "Frankie11",
+                firstName: "Frank1",
+                lastName: "Osagie1",
+                email: "franksagie1111@gmail.com",
+                password: "frank1234",
+                roleId: 2
+            });
+
+            document = {
+                title: "doc_title",
+                content: "doc_content",
+                access: "private"
+            };
+        })
+        
         it('should return 400 if title is missing from document payload', async () => {
             const documentPayload = {
                 content: "doc_content",
@@ -38,120 +71,55 @@ describe("Users Controller", () => {
         });
 
         it('should return 400 if content is missing from document payload', async () => {
-            const documentPayload = {
-                title: "doc_title",
-                access: "private"
-            };
-            const token = (new User()).generateAuthToken();
-            const res = await request(app)
-                .post(`${baseURI}/document/create`)
-                .set('x-auth-token', token)
-                .send(documentPayload);
+            document.content = "";
+
+            const res = await exec();
+
             expect(res.status).toEqual(400);
             expect(res.body.message).toMatch(/content/i);         
         });
 
         it('should return 400 if access is missing from document payload', async () => {
-            const documentPayload = {
-                title: "doc_title",
-                content: "doc_content"
-            };
-            const token = (new User()).generateAuthToken();
-            const res = await request(app)
-                .post(`${baseURI}/document/create`)
-                .set('x-auth-token', token)
-                .send(documentPayload);
+            document.access = "";
+
+            const res = await exec();
+
             expect(res.status).toEqual(400);
             expect(res.body.message).toMatch(/access/i);         
         });
 
         it('should return 404 if owner Id is not found', async () => {
-            const token = (new User()).generateAuthToken();
-            const user = await User.insertMany({
-                _id: mongoose.Types.ObjectId(),
-                userName: "Frankie1",
-                firstName: "Frank",
-                lastName: "Osagie",
-                email: "franksagie1@gmail.com",
-                password: "frank123",
-                roleId: 2
-            });
+            
+            user.email = "franksagie1110@gmail.com"
+            user.save();
 
-            const document = {
-                title: "doc_title",
-                content: "doc_content",
-                access: "private",
-                ownerId: user._id
-            }
+            const res = await exec();
 
-            const res = await request(app)
-                .post(`${baseURI}/document/create`)
-                .set('x-auth-token', token)
-                .send(document) 
             expect(res.status).toEqual(404);
             expect(res.body.message).toMatch(/not found/i);         
         });
 
         it('should pass if document ownerId is equal to the user Id', async () => {
-            const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
-
-            let user = await User.insertMany({
-                userName: "Frankie11",
-                firstName: "Frank1",
-                lastName: "Osagie1",
-                email: "franksagie1111@gmail.com",
-                password: "frank1234",
-                roleId: 2
-            });
-
             user._id = decoded._id;
+            user.email = "franksagie1111@gmail.com";
+            user.save();
 
-            let document = {
-                title: "doc_title",
-                content: "doc_content",
-                access: "private"
-            };
             document.ownerId = user._id;
 
-            const res = await request(app)
-                .post(`${baseURI}/document/create`)
-                .set('x-auth-token', token)
-                .send(document) 
-            expect(document.ownerId).toEqual(decoded._id);
+            const res = await exec();
+
+            expect(document.ownerId).toEqual(user._id);
             expect(res.header).toBeDefined();
         });
-        //TODO... test for 200 if user creates document
     });
 
     describe('User retrieves all documents', () => {
-        it('should return 404 if user Id is not found', async () => {
-            const token = (new User()).generateAuthToken();
-            const user = new User({
-                userName: "Frankie11",
-                firstName: "Frank1",
-                lastName: "Osagie1",
-                email: "franksagie101@gmail.com",
-                password: "frank1234",
-                roleId: 2
-            });
-            user._id = mongoose.Types.ObjectId();
-            await user.save();
-            
-            const res = await request(app)
-                .get(`${baseURI}/documents`)
-                .set('x-auth-token', token)
-            expect(res.status).toEqual(404);     
-            expect(res.body.message).toMatch(/not found/i);    
-        });
 
-        it('should return 200 if user Id is found', async () => {
-            
-            const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
+        beforeEach(() => {
+            token = (new User()).generateAuthToken();
+            decoded = jwt.verify(token, secretKey);
 
-            await User.insertMany({
-                _id: decoded._id,
+            user = new User({
                 userName: "Frankie11",
                 firstName: "Frank1",
                 lastName: "Osagie1",
@@ -159,164 +127,116 @@ describe("Users Controller", () => {
                 password: "frank1234",
                 roleId: 2
             });
-           
-            const res = await request(app)
+        });
+
+        const exec = async () => {
+            return await request(app)
                 .get(`${baseURI}/documents`)
                 .set('x-auth-token', token)
+        };
+
+        it('should return 404 if user Id is not found', async () => {
+            user._id = mongoose.Types.ObjectId();
+            await user.save();
+            
+            const res = await exec();
+
+            expect(res.status).toEqual(404);     
+            expect(res.body.message).toMatch(/not found/i);    
+        });
+
+        it('should return 200 if user Id is found', async () => {
+            user._id = decoded._id;
+            user.email = "franksagie10001@gmail.com";
+            await user.save();
+           
+            const res = await exec();
+
             expect(res.status).toEqual(200);
             expect(res.body.message).toMatch(/successfully retrieved/i);
         });
     });
 
     describe('User updates document', () => {
-        it('should return 404 if document Id is not found', async () => {
-            const token = (new User()).generateAuthToken();
-            
-            await Document.insertMany({
-                title: "doc_title",
-                content: "doc_content",
-                access: "private",
-                ownerId: mongoose.Types.ObjectId().toHexString()    
-            });
 
-            const document = {
-                title: "doc_title1",
-                content: "doc_content_1"
-            }
 
-            const res = await request(app)
-                .put(`${baseURI}/document/update/111111111111`)
-                .set('x-auth-token', token)
-                .send(document);
-            expect(res.status).toEqual(404);     
-            expect(res.body.message).toMatch(/does not exist/i);    
-        });
+        const documentPayload = {
+            title: "doc_title_1",
+            content: "doc_content_1"
+        };
 
-        it('should return 401 if document Id is not the same as owner Id', async () => {
-            const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
+        const exec = async () => {
+            return await request(app)
+            .put(`${baseURI}/document/update/${document._id}`)
+            .set('x-auth-token', token)
+            .send(documentPayload);
+        };
 
-            const user = await User.insertMany({
+        beforeEach(async () => {
+            token = (new User()).generateAuthToken();
+            decoded = jwt.verify(token, secretKey);
+
+            user = new User({
                 userName: "Frankie11",
                 firstName: "Frank1",
                 lastName: "Osagie1",
-                email: "franksagie001@gmail.com",
+                email: "franksagie002@gmail.com",
                 password: "frank1234",
-                roleId: 2
+                roleId: 1
             });
+            user._id = decoded._id;
 
-            user._id = decoded.id;
-
-            let document = await Document.create({
+            document = await Document.create({
                 title: "doc_title",
                 content: "doc_content",
                 access: "private",    
                 ownerId: mongoose.Types.ObjectId()
             });
             await document.save();
+        })
 
-            const documentPayload = {
-                title: "doc_title1",
-                content: "doc_content_1"
-            }
+        it('should return 404 if document Id is not found', async () => {
+            user.email = "franksagie003@gmail.com"
+            await user.save();
 
-            const res = await request(app)
-                .put(`${baseURI}/document/update/${document._id}`)
-                .set('x-auth-token', token)
-                .send(documentPayload);
+            document._id = mongoose.Types.ObjectId().toHexString();
+
+            let res = await exec();
+         
+            expect(res.status).toEqual(404);     
+            expect(res.body.message).toMatch(/does not exist/i);    
+        });
+
+        it('should return 401 if document Id is not the same as owner Id', async () => {
+            await document.save();
+
+            const res = await exec();
+            
             expect(res.status).toEqual(401);     
             expect(res.body.message).toMatch(/not authorized/i);    
         });
 
         it('should return 200 if document has been updated', async () => {
-            const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
+            user._id = decoded._id;
+            await user.save();
+           
+            document.ownerId = mongoose.Types.ObjectId(user._id);
+            await document.save();
+        
+            const res = await exec();
 
-            let user = await User.insertMany({
-                userName: "Frankie11",
-                firstName: "Frank1",
-                lastName: "Osagie1",
-                email: "franksagie002@gmail.com",
-                password: "frank1234",
-                roleId: 2
-            });
-            user._id = decoded._id
-            
-            let document = await Document.create({
-                title: "doc_title",
-                content: "doc_content",
-                access: "private",    
-                ownerId: mongoose.Types.ObjectId(user._id)
-            })
-
-            const documentPayload = {
-                title: "doc_title_1",
-                content: "doc_content_1"
-            };
-            
-            const res = await request(app)
-                .put(`${baseURI}/document/update/${document._id}`)
-                .set('x-auth-token', token)
-                .send(documentPayload);
             expect(res.status).toEqual(200);     
             expect(res.body.message).toMatch(/successfully updated/i);    
         });
     });
 
     describe('User deletes document', () => {
-        it('should return 404 if document Id is not found', async () => {
-            const token = (new User()).generateAuthToken();
-            let document = await Document.insertMany({ 
-                title: "doc_title",
-                content: "doc_content",
-                access: "private",    
-                ownerId: mongoose.Types.ObjectId().toHexString()
-            })
+ 
+        beforeEach( async () => {
+            token = (new User()).generateAuthToken();
+            decoded = jwt.verify(token, secretKey);
 
-            document._id = mongoose.Types.ObjectId().toHexString();
-            
-            const res = await request(app)
-                .delete(`${baseURI}/document/delete/${document._id}`)
-                .set('x-auth-token', token)
-            expect(res.status).toEqual(404);     
-            expect(res.body.message).toMatch(/not found/);     
-        });
-
-        it('should return 401 if document Id is not the same as owner Id', async () => {
-            const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
-
-            const user = await User.insertMany({
-                userName: "Frankie11",
-                firstName: "Frank1",
-                lastName: "Osagie1",
-                email: "franksagie00001@gmail.com",
-                password: "frank1234",
-                roleId: 2
-            });
-
-            user._id = decoded.id;
-
-            let document = await Document.create({
-                title: "doc_title",
-                content: "doc_content",
-                access: "private",    
-                ownerId: mongoose.Types.ObjectId()
-            });
-            await document.save();
-
-            const res = await request(app)
-                .delete(`${baseURI}/document/delete/${document._id}`)
-                .set('x-auth-token', token)
-            expect(res.status).toEqual(401);     
-            expect(res.body.message).toMatch(/not authorized/i);    
-        });
-
-        it('should return 200 if document has been deleted', async () => {
-            const token = (new User()).generateAuthToken();
-            const decoded = jwt.verify(token, secretKey);
-
-            let user = await User.insertMany({
+            user = new User({
                 userName: "Frankie11",
                 firstName: "Frank1",
                 lastName: "Osagie1",
@@ -324,19 +244,58 @@ describe("Users Controller", () => {
                 password: "frank1234",
                 roleId: 2
             });
-            user._id = decoded._id;
-            
-            let document = await Document.create({
+          
+
+            document = await Document.create({
                 title: "doc_title",
                 content: "doc_content",
                 access: "private",    
-                ownerId: mongoose.Types.ObjectId(user._id)
+                ownerId: mongoose.Types.ObjectId()
             });
             await document.save();
+        });
 
-            const res = await request(app)
+        const exec = async () => {
+            return await request(app)
                 .delete(`${baseURI}/document/delete/${document._id}`)
                 .set('x-auth-token', token)
+        };
+
+        it('should return 404 if document Id is not found', async () => {
+            decoded = "";
+
+            user.email = "franksagie1002@gmail.com";
+            await user.save();
+
+            document._id = mongoose.Types.ObjectId();
+        
+            const res = await exec();
+            
+            expect(res.status).toEqual(404);     
+            expect(res.body.message).toMatch(/not found/);     
+        });
+
+        it('should return 401 if document Id is not the same as owner Id', async () => {
+            decoded = "";
+            await user.save();
+
+            const res = await exec();
+
+            expect(res.status).toEqual(401);     
+            expect(res.body.message).toMatch(/not authorized/i);    
+        });
+
+        it('should return 200 if document has been deleted', async () => {
+
+            user.email = "franksagie1001@gmail.com";
+            user._id = decoded._id;
+            await user.save();
+
+            document.ownerId = mongoose.Types.ObjectId(user._id);
+            await document.save();
+
+            const res = await exec();
+            
             expect(res.status).toEqual(200);     
             expect(res.body.message).toMatch(/successfully deleted/i);    
         });
