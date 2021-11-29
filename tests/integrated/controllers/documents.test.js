@@ -282,7 +282,7 @@ describe("Users Controller", () => {
             const res = await exec();
 
             expect(res.status).toEqual(401);     
-            expect(res.body.message).toMatch(/not authorized/i);    
+            expect(res.body.message).toMatch(/not authorized/i);     
         });
 
         it('should return 200 if document has been deleted', async () => {
@@ -299,5 +299,130 @@ describe("Users Controller", () => {
             expect(res.status).toEqual(200);     
             expect(res.body.message).toMatch(/successfully deleted/i);    
         });
+    });
+
+    describe('ADMIN - Get all documents', () => {
+
+        beforeEach( async () => {
+            token = jwt.sign({
+                _id: mongoose.Types.ObjectId().toHexString(),
+                roleId: 1
+            }, secretKey);
+            decoded = jwt.verify(token, secretKey);
+
+            await Document.collection.insertMany([
+                {
+                    title: "doc_title",
+                    content: "doc_content",
+                    access: "private",    
+                    ownerId: mongoose.Types.ObjectId()
+                },
+                {
+                    title: "doc_title",
+                    content: "doc_content",
+                    access: "private",    
+                    ownerId: mongoose.Types.ObjectId()
+                }
+        ]);
+        });
+
+        const exec = async () => {
+            return await request(app)
+                .get(`${baseURI}/admin/documents`)
+                .set('x-auth-token', token)
+        };
+
+        it('should return 200 if documents are found', async () => {
+            const res = await exec();
+            
+            expect(res.status).toEqual(200);     
+            expect(res.body.message).toMatch(/all documents/i);     
+        });    
+    });
+
+    describe('ADMIN - Get a single document by its id', () => {
+
+        beforeEach( async () => {
+            token = jwt.sign({
+                _id: mongoose.Types.ObjectId().toHexString(),
+                roleId: 1
+            }, secretKey);
+            decoded = jwt.verify(token, secretKey);
+
+            document = new Document(
+                {
+                    title: "doc_title",
+                    content: "doc_content",
+                    access: "private",
+                    ownerId: mongoose.Types.ObjectId()
+                }
+            );
+           
+        });
+
+        const exec = async () => {
+            return await request(app)
+                .get(`${baseURI}/admin/document/${document._id}`)
+                .set('x-auth-token', token)
+        };
+
+        it('should return 404 if documents are not found', async () => {
+
+            const res = await exec();
+            
+            expect(res.status).toEqual(404);     
+            expect(res.body.message).toMatch(/not found/i);     
+        });
+        
+        it('should return 200 if documents are found', async () => {
+            document._id = mongoose.Types.ObjectId();
+            await document.save();
+
+            const res = await exec();
+            
+            expect(res.status).toEqual(200);     
+            expect(res.body.message).toMatch(/successfully retrieved/i);     
+        });
+    });
+
+    describe('ADMIN - search documents by their titles', () => {
+
+        beforeEach( async () => {
+            token = jwt.sign({
+                _id: mongoose.Types.ObjectId().toHexString(),
+                roleId: 1
+            }, secretKey);
+            decoded = jwt.verify(token, secretKey);
+
+            await Document.collection.insertMany([
+                {
+                    title: "doc_title_1",
+                    content: "doc_content_1",
+                    access: "private",    
+                    ownerId: mongoose.Types.ObjectId()
+                },
+                {
+                    title: "doc_title_2",
+                    content: "doc_content_2",
+                    access: "private",    
+                    ownerId: mongoose.Types.ObjectId()
+                }
+            ]);
+        });
+
+        const exec = async () => {
+            return await request(app)
+                .get(`${baseURI}/admin/documents/search`)
+                .query({title: "doc_title_1"})
+                .set('x-auth-token', token)
+        };
+
+        it('should return 200 if document(s) is found', async () => {
+            const res = await exec();
+            
+            expect(res.status).toEqual(200);     
+            expect(res.body.message).toMatch(/successfully searched/i);     
+        });
+        
     });
 });

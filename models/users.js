@@ -64,35 +64,11 @@ userSchema.methods.generateAuthToken = function() {
     return token;
 };
 
-//Reset forgotten password using crypto 
-userSchema.methods.getResetPasswordToken = function() {
-    //Generate crypto token
-    const resetToken = crypto.randomBytes(20).toString('hex');
-
-    //Encrypt the token and set it to resetPasswordToken
-    this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-
-    //Set the token expiry time to 30 mins
-    this.resetPasswordExpires = Date.now() + 30 * 60 * 1000;
-     
-    return resetToken;
-}
-
 userSchema.plugin(mongoosastic, {
 	host: "http://localhost:9200"
 });
 
 const User =  mongoose.model('User', userSchema);
-
-// //Mongoosastic mapping settings 
-// User.createMapping((err, mapping) => {
-// 	// if(err) {
-// 	// 	console.log("Could not create mapping ", err);
-// 	// }
-// 	console.log("mapping created");
-// 	console.log(mapping);
-// })
-
 export default User;
 
 

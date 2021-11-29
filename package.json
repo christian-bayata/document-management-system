@@ -12,6 +12,9 @@
   "engines": {
     "node": "14.16.1" 
   },
+  "jest": {
+    "setupFiles": ["dotenv/config"]
+  },
   "type": "module",
   "author": "Edomaruse Frank",
   "license": "ISC",

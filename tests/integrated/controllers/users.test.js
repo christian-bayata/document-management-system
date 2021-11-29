@@ -403,4 +403,59 @@ describe("Users Controller", () => {
            expect(res.body.message).toMatch(/deleted user/i);
        });
     });
+
+    describe('ADMIN - search users by their usernames', () => {
+        let token;
+        let decoded;
+        
+        beforeEach( async () => {
+            token = jwt.sign({
+                _id: mongoose.Types.ObjectId().toHexString(),
+                roleId: 1
+            }, secretKey);
+            decoded = jwt.verify(token, secretKey);
+
+            await User.collection.insertMany([
+                {
+                userName: "userName1_test",
+                firstName: "firstName1_test",
+                lastName: "lastName1_test",
+                email: "userEmail10_test@gmail.com",
+                password: "user1_password",
+                roleId: 2  
+                },
+                {
+                userName: "userName2_test",
+                firstName: "firstName2_test",
+                lastName: "lastName2_test",
+                email: "userEmail20_test@gmail.com",
+                password: "user2_password",
+                roleId: 2  
+                },
+                {
+                userName: "userName3_test",
+                firstName: "firstName3_test",
+                lastName: "lastName3_test",
+                email: "userEmail30_test@gmail.com",
+                password: "user3_password",
+                roleId: 2  
+                }
+            ])
+        });
+
+        const exec = async () => {
+            return await request(app)
+                .get(`${baseURI}/admin/users/search`)
+                .query({userName: "userName3_test"})
+                .set('x-auth-token', token)
+        };
+
+        it('should return 200 if user is found', async () => {
+            const res = await exec();
+            
+            expect(res.status).toEqual(200);     
+            expect(res.body.message).toMatch(/successfully searched/i);     
+        });
+        
+    });
 });
