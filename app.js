@@ -5,13 +5,19 @@ import Database from './config/database';
 import connectionString from './config/connection';
 import documents from './api/v1/routes/documents';
 import users from './api/v1/routes/users';
+import helmet from 'helmet';
+import compression from 'compression';
 
 const app = express();
 
-//Express set-up
+//Express set-up 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+//For production environment
+app.use(helmet());
+app.use(compression());
 
 //Set up database connection
 new Database(connectionString).connected()

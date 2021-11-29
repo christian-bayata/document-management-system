@@ -4,17 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node app.js",
     "dev": "SET NODE_ENV=development&&nodemon --exec babel-node app.js",
-    "test": "SET NODE_ENV=test&&jest --runInBand --verbose --forceExit --detectOpenHandles --coverage && coveralls < coverage/lcov.info"
+    "test": "SET NODE_ENV=test&&jest --runInBand --verbose --forceExit --detectOpenHandles --coverage && coveralls < coverage/lcov.info",
+    "prod": "SET NODE_ENV=production&&nodemon --exec babel-node app.js"
+  },
+  "engines": {
+    "node": "14.16.1" 
   },
   "author": "Edomaruse Frank",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "compression": "^1.7.4",
     "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
+    "helmet": "^4.6.0",
     "http-status": "^1.5.0",
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",

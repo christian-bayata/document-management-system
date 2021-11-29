@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 class Database {
-    constructor(connectionString) {
+    constructor(connectionString) { 
         this.connectionString = connectionString
     }; 
 
@@ -10,7 +10,7 @@ class Database {
             await mongoose.connect(this.connectionString, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true
-            }).then(() => console.log(`Database is connected to ${this.connectionString}`));
+            }).then(conn => console.log(`Database is connected to ${conn.connection.host}`));
         } catch(err) {
             console.log("Could not connect to the database", err);
             process.exit(1);
