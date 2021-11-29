@@ -1,4 +1,4 @@
-require('express-async-errors');
+import 'express-async-errors';
 import validateRegisterUser from '../../../validations/users/validate-register-user';
 import validateLoginUser from '../../../validations/users/validate-login-user';
 import User from '../../../models/users';
