@@ -12,6 +12,7 @@
   "engines": {
     "node": "14.16.1" 
   },
+  "type": "module",
   "author": "Edomaruse Frank",
   "license": "ISC",
   "dependencies": {
