@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+ 
 class Database {
     constructor(connectionString) { 
         this.connectionString = connectionString

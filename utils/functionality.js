@@ -16,7 +16,7 @@ class Functionality {
             //search product by its title
                 title: {
                 $regex: this.queryStr.keyword,
-                $options: 'i'
+                $options: 'i' 
                 } 
         }: {}
         

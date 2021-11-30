@@ -135,7 +135,7 @@ class DocumentController {
      * @param next
      * @route - /api/v1/admin/documents
      * @returns {Object} 
-    */
+    */ 
 
      async getAllDocuments(req, res, next) {
         return helpCalls(async () => { 

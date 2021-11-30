@@ -1,4 +1,6 @@
-# Document Management System
+# DOCUMENT MANAGEMENT SYSTEM
+
+> Secure API that allows users save, update and delete their documents based on authorization.
 
 [![Build Status](https://app.travis-ci.com/christian-bayata/document-management-system.svg?branch=main)](https://app.travis-ci.com/christian-bayata/document-management-system)
 
@@ -7,3 +9,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/bd04780928a60e62ae1e/maintainability)](https://codeclimate.com/github/christian-bayata/document-management-system/maintainability)
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/bd04780928a60e62ae1e/test_coverage)](https://codeclimate.com/github/christian-bayata/document-management-system/test_coverage)
+
+| API Features |       Status       |
+| :----------- | :----------------: |
+| User SignUp  | :white_check_mark: |
+| User SignIn  | :white_check_mark: |
