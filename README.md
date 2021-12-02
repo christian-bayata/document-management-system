@@ -17,5 +17,3 @@
 | Test Coverage Visualization (coveralls) | :white_check_mark: |
 | Code Quality Measurement                | :white_check_mark: |
 | Role Based Access                       | :white_check_mark: |
-
-![code_cov](https://user-images.githubusercontent.com/80787295/144461715-a6230d24-f501-4474-b8fa-3bba7c7471e8.PNG)
