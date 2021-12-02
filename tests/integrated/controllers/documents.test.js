@@ -14,7 +14,7 @@ let decoded;
 let user;
 let document;
 
-describe("Users Controller", () => {
+describe("Document Controller", () => {
     
     beforeAll(async () => {
         app = server
@@ -62,10 +62,8 @@ describe("Users Controller", () => {
                 access: "private"
             };
             const token = (new User()).generateAuthToken();
-            const res = await request(app)
-                .post(`${baseURI}/document/create`)
-                .set('x-auth-token', token)
-                .send(documentPayload);
+            const res = await exec();
+
             expect(res.status).toEqual(400);
             expect(res.body.message).toMatch(/title/i);         
         });
