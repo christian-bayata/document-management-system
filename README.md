@@ -18,6 +18,7 @@
 | Code Quality Measurement                | :white_check_mark: |
 | Role Based Access                       | :white_check_mark: |
 
+
 - :cop: Authentication via [JWT](https://jwt.io/)
 - Routes mapping via [express-router](https://expressjs.com/en/guide/routing.html)
 - All background operations run on [document-management-system-background-service](https://github.com/christian-bayata/document-management-system.git). This is public repo and and can be used.
@@ -958,7 +959,7 @@ This command:
 - runs `jest --coverage --runInBand` for testing with [Jest](https://github.com/facebook/jest) and the coverage
 - drops the `test database` after the test
 
-![Image showing test coverage]
+![Image showing test coverage](https://user-images.githubusercontent.com/80787295/144463059-d58930d6-8a1a-4a12-aff7-d85c49b42f62.PNG)
 
 ## npm run prod
 
