@@ -17,3 +17,5 @@
 | Test Coverage Visualization (coveralls) | :white_check_mark: |
 | Code Quality Measurement                | :white_check_mark: |
 | Role Based Access                       | :white_check_mark: |
+
+![Image showing test coverage](https://ibb.co/Xys4xpD)
